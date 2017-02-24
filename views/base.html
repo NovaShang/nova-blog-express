@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+
+<html lang="zh-cn">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no"> {% block metadata %} {% endblock %}
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+    <link href="/static/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="/static/css/site.css" rel="stylesheet" type="text/css" /> {% block head %} {% endblock %}
+    <title>{% block title %}&lt;NOVA&gt; 高尚个人站{% endblock title %}</title>
+</head>
+
+<body style="padding-top: 60px">
+    <header>
+        <!--导航条-->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <!--导航条折叠后的汉堡按钮-->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#site-navbar-collapse">
+                        <span class="sr-only">切换导航</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <!--主Logo-->
+                    <a class="navbar-brand" href="/">
+                        <span class="navbar-brandlogo">
+					        {% include "svg/logo.svg" %}
+				        </span>
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse" id="site-navbar-collapse">
+                    <!--导航项目-->
+                    <ul class="nav navbar-nav navbar-left">
+                        {% for item in navitems %} {% if item.active %}
+                        <li class="active"> <a href="{{item.url}}">{{item.name}}</a></li>
+                        {% else %}
+                        <li> <a href="{{item.url}}">{{item.name}}</a></li>
+                        {% endif %} {% endfor %}
+                    </ul>
+                    <!--用户登录-->
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if user.is_authenticated %}
+                        <li> <a href="#"><span class="glyphicon glyphicon-user"></span> {{user.username}}</a></li>
+                        <li> <a href="/logout/">注销 </a></li>
+                        {% else %}
+                        <li> <a href="/login{{request.path}}"><span class="glyphicon glyphicon-user"></span> 登陆 </a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+    <!--正文-->
+    <div class="container">
+        {% block content %} {% endblock %}
+    </div>
+
+
+    <!--页脚-->
+    {% include "footer.html" %}
+
+</body>
+
+</html>

@@ -114,3 +114,6 @@ typings/
 
 .env
 
+# sqlite3 database
+
+.db

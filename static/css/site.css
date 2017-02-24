@@ -1,0 +1,85 @@
+/*导航栏*/
+
+.navbar-inverse {
+    background-color: #000;
+    border-bottom-width: 0px;
+}
+
+.navbar-nav>li>a:hover {
+    border-bottom-color: #333;
+}
+
+.navbar-inverse .navbar-nav>li>a {
+    color: #DDD
+}
+
+.navbar-inverse .navbar-nav>.active>a,
+.navbar-inverse .navbar-nav>.active>a:hover,
+.navbar-inverse .navbar-nav>.active>a:focus {
+    color: #FFF;
+    background-color: #444;
+}
+
+.navbar-nav>li:hover {
+    background-color: #333;
+}
+
+.navbar-inverse .navbar-nav>.active>a:hover {
+    background-color: #333;
+}
+
+.navbar {
+    border-radius: 0px;
+}
+
+.navbar-brand {
+    padding: 0 0 0 0;
+}
+
+.navbar-brandlogo>svg {
+    width: 150px;
+    height: 50px;
+}
+
+.navbar-brandlogo>svg path {
+    fill: #FFFFFF;
+}
+
+footer {
+    background: #EEEEEE;
+}
+
+.site-footer {
+    padding-top: 20px;
+}
+
+.footer-icon>svg {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+}
+
+.footer-icon>svg path {
+    fill: #828282;
+}
+
+.footer-description {
+    color: #828282;
+}
+
+.right-column {
+    padding-top: 50px;
+}
+
+.footer-col {
+    padding-bottom: 50px;
+}
+
+@media (max-width:767) {
+    .right-column {
+        visibility: hidden;
+    }
+    .main-column {
+        width: 100%;
+    }
+}

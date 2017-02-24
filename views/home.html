@@ -1,0 +1,96 @@
+// Import required packages var express = require('express'); var Sequelize = require('sequelize'); var swig = require('swig'); //============================DataModel======================== //Initialize ORM framework var sequelize = new Sequelize('blog',
+null, null, { dialect: 'sqlite', storage: 'blog.db' }); //Define data models var Article = sequelize.define('article', { id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true }, title: Sequelize.TEXT, summary: Sequelize.TEXT, content: Sequelize.TEXT,
+}); var Tag = sequelize.define('tag', { id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true }, name: Sequelize.STRING }); var Category = sequelize.define('category', { name: Sequelize.STRING, title: Sequelize.STRING }); //Build assosiation
+relationship between models Article.belongsTo(Category); //===========================WebServer========================== //Initialize and setup web framework var app = express(); app.engine('html', swig.renderFile); app.set('view engine', 'html'); app.use('/static',
+express.static('static')); // Routers app.get('/', function(request, response) { response.render('home.html'); }); app.get('/blog', function(request, response) { response.render('blog.html', { title: 'BIM & Coding', sub_title: '高尚的博客', }); }); app.get('/blog/:id',
+function(request, response) { response.render('article.html'); }); app.get('/blog/tag/:id', function(request, response) { response.render('blog.html'); }); app.get('/blog/cate/:name', function(request, response) { response.render('blog.html'); }); app.get('/about',
+function(request, response) { response.render('about.html'); }); app.get('/portfolio', function(request, response) { response.render('portfolio.html'); }); //=============================Run============================== if (process.argv[2] == 'migrate')
+{ //Sync database console.log('Syncing database') sequelize.sync().then( console.log('Database sync complete!') ); } else { // Run server app.listen(8000); }
+<div class="col-sm-2 col-xs-4">
+    <a href="/trick/">
+        <span class="item-icon">
+                            {% include "svg/Coding.svg" %}
+                        </span>
+    </a>
+    <p class="text-item text-center"> 编程 </p>
+</div>
+<div class="col-sm-2 col-xs-4">
+    <a href="/trick/">
+        <span class="item-icon">
+                            {% include "svg/Design.svg" %}                          
+                        </span>
+    </a>
+    <p class="text-item text-center"> 设计 </p>
+</div>
+<div class="col-sm-2 col-xs-4">
+    <a href="/trick/">
+        <span class="item-icon">
+                            {% include "svg/Tech.svg" %}
+                        </span>
+    </a>
+    <p class="text-item text-center"> 科技 </p>
+</div>
+<div class="col-sm-2 col-xs-4">
+    <a href="/trick/">
+        <span class="item-icon">
+                            {% include "svg/Life.svg" %}
+                        </span>
+    </a>
+    <p class="text-item text-center"> 生活 </p>
+</div>
+<div class="col-sm-2 col-xs-4">
+    <span class="item-icon">
+                            {% include "svg/Me.svg" %}
+                        </span>
+    <p class="text-item text-center"> 还有我 </p>
+</div>
+</div>
+</div>
+</div>
+</header>
+
+<!--正文-->
+<div class="landscape row">
+    <a href="/blog/">
+        <div class="col-xs-12 col-sm-6 col-md-3 home-block" style="background-image:url('/static/img/blog_home.jpg');">
+            <div class="home-block-text">
+                <p>高尚的个人博客</p>
+                <p>记录我的技术积累、学习历程</p>
+                <p>还有生活</p>
+            </div>
+        </div>
+    </a>
+    <a href="/ezvr/">
+        <div class="col-xs-12 col-sm-6 col-md-3 home-block" style="background-image:url('/static/img/ezvr_home.jpg');">
+            <div class="home-block-text">
+                <p>虚拟现实发布平台</p>
+                <p>无需技术、无需设备</p>
+                <p>每个人都能创造并体验VR</p>
+            </div>
+        </div>
+    </a>
+    <a href="/">
+        <div class="col-xs-12 col-sm-6 col-md-3 home-block" style="background-image:url('/static/img/none_home.png');">
+            <div class="home-block-text">
+                <p>还有一些个人小项目在做</p>
+                <p>等完善一些再放过来吧</p>
+            </div>
+        </div>
+    </a>
+    <a href="/about/">
+        <div class="col-xs-12 col-sm-6 col-md-3 home-block" style="background-image:url('/static/img/about_home.jpg');">
+            <div class="home-block-text">
+                <p>高尚的个人简历</p>
+                <p>我是谁？</p>
+            </div>
+        </div>
+    </a>
+</div>
+
+
+
+
+{% include "footer.html" %}
+</body>
+
+</html>

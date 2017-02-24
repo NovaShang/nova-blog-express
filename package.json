@@ -2,9 +2,10 @@
     "name": "nova-blog",
     "version": "1.0.0",
     "description": "Nova's blog nodejs version",
-    "main": "index.js",
+    "main": "server.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "migrate": ""
     },
     "keywords": [
         "blog"
@@ -14,6 +15,16 @@
     "dependencies": {
         "express": "^4.14.1",
         "sequelize": "^3.30.2",
-        "sqlite3": "^3.1.8"
-    }
+        "sqlite3": "^3.1.8",
+        "swig": "^1.4.2"
+    },
+    "devDependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/NovaShang/nova-blog.git"
+    },
+    "bugs": {
+        "url": "https://github.com/NovaShang/nova-blog/issues"
+    },
+    "homepage": "https://github.com/NovaShang/nova-blog#readme"
 }

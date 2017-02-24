@@ -1,0 +1,27 @@
+{% extends "two-columns.html" %}
+
+{% block head %}
+ <link href="/static/css/highlight.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+
+{% block metadata %}
+<meta name="description" content="{{article.summary}}" >
+ 
+{% endblock %}
+
+{% block title %} {{article.title}} - Nova {% endblock %}
+
+{% block maincol %}
+                <div class="page-header">
+                    <h1>{{article.title}}</h1>
+                    <p>{{article.time|date:"Y 年 n 月 j 日"}}</p>
+                </div>
+                <div class ="article-content">
+                    {{article_content|safe}}
+                </div>
+		{% endblock %}
+
+{% block rightcol %}
+{% include "right-column.html" %}
+{% endblock %}

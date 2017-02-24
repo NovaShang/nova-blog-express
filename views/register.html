@@ -1,0 +1,63 @@
+{% extends "base.html" %} {% block title %} 注册用户 {% endblock %} {% block content %}
+
+
+<form action="" method="POST" class="form-horizontal" role="form" style="padding-top:50px">
+    {% csrf_token %}
+    <div class="form-group">
+        <legend>注册用户</legend>
+    </div>
+    <div class="form-group {% if user_exist %}has-error{% endif %}">
+        <label for="username" class="col-sm-2 control-label">用户名</label>
+        <div class="col-sm-6">
+            <input type="text" name="username" class="form-control" value="{{username}}" required="required" pattern="" title=""> {% if user_exist %}
+            <span class="help-block">用户名已存在或格式错误</span> {% endif %}
+        </div>
+    </div>
+    <div class="form-group {% if mail_error %}has-error{% endif %}">
+        <label for="mail" class="col-sm-2 control-label">电子邮件</label>
+        <div class="col-sm-6">
+            <input type="text" name="mail" class="form-control" value="{{mail}}" required="required" pattern="" title=""> {% if mail_error %}
+            <span class="help-block">邮件格式错误</span> {% endif %}
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-6 col-sm-offset-2">
+            <hr/>
+        </div>
+    </div>
+    <div class="form-group {% if password_error %}has-error{% endif %}">
+        <label for="password" class="col-sm-2 control-label">密码</label>
+        <div class="col-sm-6">
+            <input type="password" name="password" class="form-control has-error" value="" required="required" pattern="" title=""> {% if password_error %}
+            <span class="help-block">密码格式错误</span> {% endif %}
+        </div>
+    </div>
+    <div class="form-group {% if password_not_same %}has-error{% endif %}">
+        <label for="password2" class="col-sm-2 control-label">确认密码</label>
+        <div class="col-sm-6">
+            <input type="password" name="password2" class="form-control has-error" value="" required="required" pattern="" title=""> {% if password_not_same %}
+            <span class="help-block">两次输入密码不一致</span> {% endif %}
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-6 col-sm-offset-2">
+            <hr/>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2">
+            <p>嗯... 没有最终用户许可协议...</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2">
+            <button type="submit" class="btn btn-success">注册！</button>
+        </div>
+    </div>
+</form>
+
+
+
+
+
+{% endblock %}
