@@ -1,0 +1,49 @@
+{% extends "base.html" %} {% block title %}发布文章{% endblock %} {% block head %}
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/marked.js"></script>
+<script src="/static/js/lodash.js"></script>
+<link href="/static/css/editor.css" rel="stylesheet" type="text/css" /> {% endblock %} {% block content %}
+<div id="md-editor">
+    <div id="editor-toolbar">
+        <div id="editor-toolbar-left">
+            <input type="text" class="editor-text" id="text-title" placeholder="文章标题">
+            <select id="select-cate" class="editor-select">
+            <option value="">类别1</option>
+        </select>
+            <input type="text" class="editor-text" id="text-summary" placeholder="文章摘要">
+        </div>
+        <button type="button" class="btn btn-primary btn-block" id="publish-button">发布</button>
+    </div>
+    <div id="editor-main">
+        <textarea :value="mdSrc" @input="update" id="editor-left" spellcheck="false">
+            left
+        </textarea>
+        <div v-html="mdCompiled" id="editor-right">
+            right
+        </div>
+    </div>
+</div>
+<script>
+    var app = new Vue({
+        el: '#md-editor',
+        data: {
+            mdSrc: ''
+        },
+        computed: {
+            mdCompiled: function () {
+                return marked(this.mdSrc, { sanitize: true });
+            }
+        },
+        methods: {
+            update: _.debounce(function (e) {
+                this.mdSrc = e.target.value;
+            }, 300),
+            publish: function () {
+            }
+        }
+    });
+    document.getElementById("editor-main").style.height = window.innerHeight - 100 + "px";
+
+</script>
+
+{% endblock %}

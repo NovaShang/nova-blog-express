@@ -31,29 +31,31 @@ app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.use('/static', express.static('static'));
 // Routers
-app.get('/', function(request, response) {
+app.get('/', function (request, response) {
     response.render('home.html');
 });
-app.get('/blog', function(request, response) {
-    response.render('blog.html',{
-        title:'BIM & Coding',
-        sub_title:'高尚的博客',
-        
+app.get('/blog', function (request, response) {
+    response.render('blog.html', {
+        title: 'BIM & Coding',
+        sub_title: '高尚的博客',
     });
 });
-app.get('/blog/:id', function(request, response) {
+app.get('/blog/publish', function (request, response) {
+    response.render('publish.html');
+});
+app.get('/blog/:id', function (request, response) {
     response.render('article.html');
 });
-app.get('/blog/tag/:id', function(request, response) {
+app.get('/blog/tag/:id', function (request, response) {
     response.render('blog.html');
 });
-app.get('/blog/cate/:name', function(request, response) {
+app.get('/blog/cate/:name', function (request, response) {
     response.render('blog.html');
 });
-app.get('/about', function(request, response) {
+app.get('/about', function (request, response) {
     response.render('about.html');
 });
-app.get('/portfolio', function(request, response) {
+app.get('/portfolio', function (request, response) {
     response.render('portfolio.html');
 });
 

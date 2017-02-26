@@ -1,30 +1,31 @@
 {
-    "name": "nova-blog",
-    "version": "1.0.0",
-    "description": "Nova's blog nodejs version",
-    "main": "server.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "migrate": ""
-    },
-    "keywords": [
-        "blog"
-    ],
-    "author": "nova",
-    "license": "GPL-3.0",
-    "dependencies": {
-        "express": "^4.14.1",
-        "sequelize": "^3.30.2",
-        "sqlite3": "^3.1.8",
-        "swig": "^1.4.2"
-    },
-    "devDependencies": {},
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/NovaShang/nova-blog.git"
-    },
-    "bugs": {
-        "url": "https://github.com/NovaShang/nova-blog/issues"
-    },
-    "homepage": "https://github.com/NovaShang/nova-blog#readme"
+  "name": "nova-blog",
+  "version": "1.0.0",
+  "description": "Nova's blog nodejs version",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate": ""
+  },
+  "keywords": [
+    "blog"
+  ],
+  "author": "nova",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "express": "^4.14.1",
+    "marked": "^0.3.6",
+    "sequelize": "^3.30.2",
+    "sqlite3": "^3.1.8",
+    "swig": "^1.4.2"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NovaShang/nova-blog.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NovaShang/nova-blog/issues"
+  },
+  "homepage": "https://github.com/NovaShang/nova-blog#readme"
 }

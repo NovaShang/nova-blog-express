@@ -16,7 +16,7 @@
         <div class="article-list-item">
 
             <a href="/blog/{{article.pk}}"><h2 class="text-primary">{{article.title}}</h2></a>
-            <p class="text-muted">{{article.time|date:"Y 年 n 月 j 日"}}</p>
+            <p class="text-muted">{{article.time}}</p>
             <p class="text-justify">
                 {{article.summary}}
             </p>
@@ -27,7 +27,6 @@
             </p>
             <hr/>
         </div>
-        {% empty %}
         <h3><small>无结果</small></h3>
         {% endfor %}
     </div>
