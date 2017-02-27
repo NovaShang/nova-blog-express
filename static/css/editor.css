@@ -1,20 +1,114 @@
-#editor-toolbar{
+#editor-toolbar {
     height: 60px;
     width: 100%;
-    background-color: #FFF;
-    border: 1px solid #DDD;
-    border-bottom: 2px solid #DDD;
-    display: table;
-
+    background-color: #DDD;
+    display: flex;
 }
 
-#editor-left{
+.editor-text {
+    outline: none;
     border: none;
-    border-right: 1px solid #DDD;
+    height: 30px;
+    background: transparent;
+    padding-left: 10px;
+}
+
+#editor-toolbar-left {
+    width: 100%;
+    flex-grow: 1;
+    padding-left: 10px;
+    padding-right: 5px;
+}
+
+#editor-toolbar-top {
+    display: flex;
+    flex-wrap: nowrap;
+    max-height: 30px;
+}
+
+#text-title {
+    flex-grow: 1;
+    border-bottom: 2px solid #AAA;
+    margin-right: 5px;
+}
+
+#tags-panel {
+    border-bottom: 2px solid #AAA;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#tags {
+    padding-left: 0px;
+}
+
+#tags>li {
+    float: right;
+    list-style: none;
+}
+
+.tag {
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 2.2;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+#btn-addtag {
+    font-size: 11px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-top: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+#select-cate {
+    float: right;
+    height: 30px;
+    width: 100px;
+    margin-right: 5px;
+    margin-left: 5px;
+    border: none;
+    background: transparent;
+    border-bottom: 2px solid #AAA
+}
+
+#text-summary {
+    width: 100%;
+}
+
+#md-editor {
+    margin-bottom: 10px;
+    box-shadow: 0px 0px 5px lightgray;
+}
+
+#editor-right {
+    float: right;
+    width: 50%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    overflow-y: auto;
+    border: 1px solid #DDD;
+    border-top: none;
+}
+
+#publish-button {
+    height: 100%;
+    width: 80px;
+    border-radius: 0px;
+}
+
+#editor-left {
+    border: none;
     resize: none;
     outline: none;
     background-color: #F3F3F3;
-    font-size:14px;
+    font-size: 14px;
     font-family: monospace;
     padding: 20px;
     float: left;
@@ -22,48 +116,25 @@
     height: 100%;
 }
 
-#editor-right{
-    float:right;
-    width: 50%;
-    height: 100%;
-    box-sizing:border-box;
-    padding: 20px;
-    overflow-y:auto; 
-}
-
-.editor-text{
-    border: 1px solid #DDD;
-    outline: none;
-    height: 30px;
-}
-
-#text-title{
-    width: 50%;
+.hover {
     float: left;
+    background-color: #FFF;
+    box-shadow: 0px 0px 5px gray;
+    padding: 0px;
+    border: 1px solid #999;
 }
 
-#text-summary{
-    width: 100%;
+#panel-addtag {
+    position: absolute;
+    width: 300px;
 }
 
-#publish-button{
-    float: left;
-    height: 100%;
-    width: 80px;
-    border-radius: 0px;
-    vertical-align: top;
-    display: table-cell;
+.hover-title {
+    background-color: #DDD;
+    padding: 5px;
 }
 
-#select-cate{
-    float: left;
-    width: 50%;
-    height: 30px;
-        border: 1px solid #DDD;
-
-}
-
-#editor-toolbar-left{
-    width: 100%;
-    display: table-cell;
+.hover-content {
+    padding: 5px;
+    background-color: #FFF
 }

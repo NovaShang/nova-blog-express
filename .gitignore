@@ -113,7 +113,3 @@ typings/
 # dotenv environment variables file
 
 .env
-
-# sqlite3 database
-
-.db
