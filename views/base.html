@@ -36,11 +36,9 @@
                 <div class="collapse navbar-collapse" id="site-navbar-collapse">
                     <!--导航项目-->
                     <ul class="nav navbar-nav navbar-left">
-                        {% for item in navitems %} {% if item.active %}
-                        <li class="active"> <a href="{{item.url}}">{{item.name}}</a></li>
-                        {% else %}
-                        <li> <a href="{{item.url}}">{{item.name}}</a></li>
-                        {% endif %} {% endfor %}
+                        <li> <a href="/blog">博客</a></li>
+                        <li> <a href="/portfolio">作品集</a></li>
+                        <li> <a href="/about">关于我</a></li>
                     </ul>
                     <!--用户登录-->
                     <ul class="nav navbar-nav navbar-right">
