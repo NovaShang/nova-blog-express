@@ -71,7 +71,14 @@ app.get('/blog/tag/:id', function(request, response) {
 });
 // Index of a category
 app.get('/blog/cate/:name', function(request, response) {
-    response.render('blog.html');
+    Promise.all([Category.findOne({ where: { name: request.params.name } }, { include: [Article] }), Tag.findAll(), Category.findAll()])
+        .then(x => response.render('blog.html', {
+            title: x[0].title,
+            sub_title: '类别',
+            articles: x[0].articles,
+            tags: x[1],
+            cates: x[2]
+        }));
 });
 // Blog editor
 app.get('/blog/publish', function(request, response) {

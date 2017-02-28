@@ -11,6 +11,17 @@
     <p></p>
     <div class="panel panel-default">
         <div class="panel-heading">
+            分类
+        </div>
+        <ul class="list-group"> {% for cate in cates %}
+            <a href="/blog/cate/{{cate.name}}">
+                <li class="list-group-item">{{cate.name}}</li>
+            </a>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
             标签
         </div>
         <div class="panel-body">
