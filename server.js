@@ -217,6 +217,9 @@ if (process.argv[2] == 'migrate') {
     //Sync database
     console.log('Syncing database')
     sequelize.sync().then(console.log('Database sync complete!'));
+} else if (process.argv[2] == 'runserver') {
+    app.listen(80);
+
 } else {
     // Run server
     app.listen(8000);
