@@ -4,8 +4,8 @@ var Sequelize = require('sequelize');
 var swig = require('swig');
 var bodyparser = require('body-parser');
 var repl = require('repl');
-
-//============================DataModel==========================
+var marked = require('marked')
+    //============================DataModel==========================
 
 //Initialize ORM framework
 var sequelize = new Sequelize('blog', null, null, {
@@ -115,7 +115,19 @@ app.get('/blog/search', function(request, response) {
 });
 // Article page
 app.get('/blog/:id', function(request, response) {
-    response.render('article.html');
+    Promise.all([
+            Article.findOne({
+                where: { id: request.params.id }
+            }),
+            Tag.findAll(),
+            Category.findAll()
+        ])
+        .then(x => response.render('article.html', {
+            article: x[0],
+            article_content: marked(x[0].content),
+            tags: x[1],
+            cates: x[2]
+        }));
 });
 // Blog editor
 app.get('/blog/publish', function(request, response) {
