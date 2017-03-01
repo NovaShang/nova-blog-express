@@ -113,6 +113,10 @@ app.get('/blog/search', function(request, response) {
             cates: x[2]
         }));
 });
+// Blog editor
+app.get('/blog/publish', function(request, response) {
+    response.render('publish.html');
+});
 // Article page
 app.get('/blog/:id', function(request, response) {
     Promise.all([
@@ -128,10 +132,6 @@ app.get('/blog/:id', function(request, response) {
             tags: x[1],
             cates: x[2]
         }));
-});
-// Blog editor
-app.get('/blog/publish', function(request, response) {
-    response.render('publish.html');
 });
 // About page
 app.get('/about', function(request, response) {
