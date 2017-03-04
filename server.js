@@ -1,36 +1,9 @@
 // Import required packages
 var express = require('express');
-var Sequelize = require('sequelize');
+var models = require('./models');
 var swig = require('swig');
 var bodyparser = require('body-parser');
-var repl = require('repl');
 var marked = require('marked');
-//============================DataModel==========================
-
-//Initialize ORM framework
-var sequelize = new Sequelize('blog', null, null, {
-    dialect: 'sqlite',
-    storage: 'blog.db'
-});
-
-//Define data models
-var Article = sequelize.define('article', {
-    title: Sequelize.TEXT,
-    summary: Sequelize.TEXT,
-    content: Sequelize.TEXT,
-});
-var Tag = sequelize.define('tag', {
-    name: Sequelize.STRING
-});
-var Category = sequelize.define('category', {
-    name: Sequelize.STRING,
-    title: Sequelize.STRING
-});
-
-//Build assosiation relationship between models
-Article.belongsTo(Category);
-Article.belongsToMany(Tag, { through: 'article2tag' });
-Tag.belongsToMany(Article, { through: 'article2tag' });
 
 //===========================WebServer===========================
 
@@ -55,9 +28,9 @@ app.get('/', function(request, response) {
 // Blog index
 app.get('/blog', function(request, response) {
     Promise.all([
-            Article.findAll({ include: [Tag] }),
-            Tag.findAll(),
-            Category.findAll()
+            models.Article.findAll({ include: [models.Tag] }),
+            models.Tag.findAll(),
+            models.Category.findAll()
         ])
         .then(x => response.render('blog.html', {
             title: 'BIM & Coding',
@@ -70,9 +43,9 @@ app.get('/blog', function(request, response) {
 // Index of a tag
 app.get('/blog/tag/:id', function(request, response) {
     Promise.all([
-            Tag.findById(request.params.id, { include: [Article] }),
-            Tag.findAll(),
-            Category.findAll()
+            models.Tag.findById(request.params.id, { include: [models.Article] }),
+            models.Tag.findAll(),
+            models.Category.findAll()
         ])
         .then(x => response.render('blog.html', {
             title: x[0].name,
@@ -85,14 +58,14 @@ app.get('/blog/tag/:id', function(request, response) {
 // Index of a category
 app.get('/blog/cate/:name', function(request, response) {
     Promise.all([
-            Article.findAll({
+            models.Article.findAll({
                 include: [{
-                    model: Category,
+                    model: models.Category,
                     where: { name: request.params.name }
                 }]
             }),
-            Tag.findAll(),
-            Category.findAll()
+            models.Tag.findAll(),
+            models.Category.findAll()
         ])
         .then(x => response.render('blog.html', {
             title: x[0].title,
@@ -105,11 +78,11 @@ app.get('/blog/cate/:name', function(request, response) {
 // Search result
 app.get('/blog/search', function(request, response) {
     Promise.all([
-            Article.findAll({
+            models.Article.findAll({
                 where: { title: { $like: '%' + request.query.keyword + '%' } }
             }),
-            Tag.findAll(),
-            Category.findAll()
+            models.Tag.findAll(),
+            models.Category.findAll()
         ])
         .then(x => response.render('blog.html', {
             title: request.query.keyword,
@@ -126,11 +99,11 @@ app.get('/blog/publish', function(request, response) {
 // Article page
 app.get('/blog/:id', function(request, response) {
     Promise.all([
-            Article.findOne({
+            models.Article.findOne({
                 where: { id: request.params.id }
             }),
-            Tag.findAll(),
-            Category.findAll()
+            models.Tag.findAll(),
+            models.Category.findAll()
         ])
         .then(x => response.render('article.html', {
             article: x[0],
@@ -157,16 +130,16 @@ app.post('/api/blog/publish', function(request, response) {
     Promise.all([
             Promise.all(
                 request.body.tags.map(
-                    x => Tag.findOne({ where: { name: x } })
+                    x => models.Tag.findOne({ where: { name: x } })
                 )),
             Promise.all([
-                Article.create({
+                models.Article.create({
                     title: request.body.title,
                     summary: request.body.summary,
                     content: request.body.content
                 })
                 .then(x => article = x),
-                Category.findOne({
+                models.Category.findOne({
                     where: { name: request.body.cate }
                 })
             ])
@@ -189,13 +162,12 @@ app.post('/api/blog/publish', function(request, response) {
 });
 // Get tags
 app.get('/api/blog/tags', function(request, response) {
-    Tag.findAll()
+    models.Tag.findAll()
         .then(x => response.json(x))
 });
 // Add a tag
 app.post('/api/blog/tags', function(request, response) {
-
-    Tag.create({ name: request.body.name })
+    models.Tag.create({ name: request.body.name })
         .then(x => response.json({
             result: "success",
             url: ""
@@ -203,11 +175,11 @@ app.post('/api/blog/tags', function(request, response) {
 });
 // Get categories
 app.get('/api/blog/categories', function(request, response) {
-    Category.findAll().then(x => response.json(x))
+    models.Category.findAll().then(x => response.json(x))
 });
 // Add a category
 app.post('/api/blog/categories', function(request, response) {
-    Category.create({
+    models.Category.create({
             name: request.body.name,
             title: request.body.title
         })
