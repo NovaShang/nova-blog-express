@@ -23,7 +23,7 @@ app.use(function(request, response, next) {
     next();
 });
 
-app.use(blog);
+app.use('/blog',blog);
 
 // Pages
 // Home page
