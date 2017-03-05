@@ -59,8 +59,7 @@
     font-size: 13px;
     font-weight: normal;
     line-height: 2.2;
-    margin-left: 2px;
-    margin-right: 2px;
+    margin: 2px;
 }
 
 #btn-addtag {
@@ -145,7 +144,9 @@
 
 .hover-content {
     padding: 5px;
-    background-color: #FFF
+    background-color: #FFF;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .hover-title>p {
@@ -153,8 +154,12 @@
     flex-grow: 1
 }
 
+#text-newtag {
+    flex-grow: 1
+}
+
 .hover-title>button {
-    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .model-dialog-bg {
