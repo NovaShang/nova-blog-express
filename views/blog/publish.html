@@ -1,0 +1,166 @@
+{% extends "../base.html" %}
+<!--标题-->
+{% block title %}发布文章{% endblock %}
+<!--引用-->
+{% block head %}
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/vue-resource.js"></script>
+<script src="/static/js/marked.js"></script>
+<script src="/static/js/lodash.js"></script>
+<link href="/static/css/editor.css" rel="stylesheet" type="text/css" /> {% endblock %}
+<!--正文-->
+{% block content %}
+<!--博文编辑器-->
+<div id="blog-editor">
+    <!--编辑器功能区-->
+    <div id="editor-toolbar">
+        <!--功能区左侧-->
+        <div id="editor-toolbar-left">
+            <!--功能区左侧上条-->
+            <div id="editor-toolbar-left-top">
+                <input type="text" v-model="title" class="editor-text" id="text-title" placeholder="文章标题">
+                <div id="tags-panel">
+                    <ul id="tags">
+                        <li v-for="tag in currentTags"> <span class="label label-primary tag" v-on:click="tags.push(currentTags.pop())">${ tag }</span> </li>
+                        <li><button type="button" v-on:click="showTagPanel=true" class="btn btn-default" id="btn-addtag"><span class="glyphicon glyphicon-plus"></span>标签</button>
+                            <div class="hover" id="panel-addtag" v-show="showTagPanel">
+                                <div class="hover-title">
+                                    <button type="button" class="btn btn-sm btn-primary" v-on:click="addNewTag"><span class="glyphicon glyphicon-plus"></span></button>
+                                    <input type="text" v-model="newtag" class="editor-text" id="text-newtag" placeholder="新标签">
+                                    <button type="button" class="transparent-control pull-right" v-on:click="showTagPanel=false"><span class="glyphicon glyphicon-remove"></span></button>
+                                </div>
+                                <div class="hover-content">
+                                    <div v-for="tag in tags" class="label label-primary tag" v-on:click="currentTags.push(tags.pop())">${ tag }</div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div id="cate-panel">
+                    <select id="select-cate" class="transparent-control" v-model="currentCate" id="select-cate">
+                        <option value="default">请选择分类</option>
+                        <option v-for="cate in cates" v-bind:value="cate.name">${cate.title}</option>
+                    </select>
+                    <button type="button" class="transparent-control" v-on:click="showCatePanel=true"> <span class="glyphicon glyphicon-edit"></span> </button>
+                    <!--分类编辑对话框-->
+                    <div v-show="showCatePanel" class="model-dialog">
+                        <div class="model-dialog-bg"></div>
+                        <div class="model-dialog-fg">
+                            <div class="hover-title">
+                                <p>编辑分类</p>
+                                <button type="button" @click="addNewCate" class="btn btn-sm btn-success pull-right">添加</button>
+                                <button type="button" @click="showCatePanel=false" class="btn btn-sm btn-primary pull-right">完成</button>
+                            </div>
+                            <div class="hover-content">
+                                <label for="input-cate-name">分类名称</label>
+                                <input type="text" v-model="newCateName" id="input-cate-name" class="form-control">
+                                <label for="input-cate-name">分类标题</label>
+                                <input type="text" v-model="newCateTitle" id="input-cate-name" class="form-control">
+                                <br>
+                                <ul class="list-group" style="width:100%">
+                                    <li v-for="cate in cates" class="list-group-item">${cate.title}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="text" v-model="summary" class="editor-text" id="text-summary" placeholder="文章摘要">
+        </div>
+        <button type="button" @click="publish" class="btn btn-primary btn-block" id="publish-button">发布</button>
+    </div>
+    <div id="markdown-editor">
+
+        <!--编辑区-->
+        <textarea :value="mdSrc" @input="update" id="editor-left" spellcheck="false"></textarea>
+        <!--预览区-->
+        <div v-html="mdCompiled" id="editor-right"></div>
+    </div>
+</div>
+<!--脚本-->
+<script>
+    var app = new Vue({
+        delimiters: ['${', '}'],
+        el: '#blog-editor',
+        data: {
+            title: '',
+            summary: '',
+            currentCate: 'default',
+            mdSrc: '',
+            newtag: '',
+            showTagPanel: false,
+            showCatePanel: false,
+            tags: [],
+            currentTags: [],
+            cates: [],
+            newCateName: '',
+            newCateTitle: ''
+        },
+        computed: {
+            mdCompiled: function() {
+                return marked(this.mdSrc, {
+                    sanitize: true
+                });
+            }
+        },
+        methods: {
+            update: _.debounce(function(e) {
+                this.mdSrc = e.target.value;
+            }, 300),
+            publish: function() {
+                $.post('/api/blog/publish', {
+                    title: this.title,
+                    cate: this.currentCate,
+                    tags: this.currentTags,
+                    summary: this.summary,
+                    content: this.mdSrc
+                }, function(data) {
+                    if (data.result == "success") {
+                        window.location.href = data.url;
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            },
+            addNewTag: function() {
+                this.currentTags.push(this.newtag);
+                $.post("/api/blog/tags", {
+                    name: this.newtag
+                }, function(data) {
+                    if (data.result != "success") {
+                        alert(data.message);
+                    }
+                });
+                this.newtag = '';
+
+            },
+            addNewCate: function() {
+                $.post("/api/blog/categories", {
+                    name: this.newCateName,
+                    title: this.newCateTitle
+                }, function(data) {
+                    if (data.result != "success") {
+                        alert(data.message);
+                    } else {
+                        $.get("/api/blog/categories", function(data) {
+                            app.cates = data;
+                        })
+                    }
+                });
+                this.newCateName = '';
+                this.newCateTitle = '';
+            }
+
+
+        }
+    });
+    $.get("/api/blog/tags", function(data) {
+        app.tags = data.map(x => x.name);
+    });
+    $.get("/api/blog/categories", function(data) {
+        app.cates = data;
+    })
+    document.getElementById("markdown-editor").style.height = window.innerHeight - 125 + "px";
+</script>
+
+{% endblock %}

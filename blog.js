@@ -1,5 +1,6 @@
 var express = require("express");
-var Sequelize = require("sequelize")
+var Sequelize = require("sequelize");
+var marked = require('marked');
 
 //============================DataModel==========================
 
@@ -33,11 +34,11 @@ Tag.belongsToMany(Article, { through: 'article2tag' });
 var blog = express.Router();
 module.exports = blog;
 
-blog.use(function (request, response, next) {
-    Promise.all(
+blog.use(function(request, response, next) {
+    Promise.all([
         Tag.findAll(),
         Category.findAll()
-    ).then(x => {
+    ]).then(x => {
         request.tags = x[0];
         request.categories = x[1];
         next();
@@ -45,9 +46,9 @@ blog.use(function (request, response, next) {
 });
 
 // Blog index
-blog.get('/', function (request, response) {
+blog.get('/', function(request, response) {
     Article.findAll({ include: [Tag] })
-        .then(x => response.render('blog.html', {
+        .then(x => response.render('blog/blog.html', {
             title: 'BIM & Coding',
             sub_title: '高尚的博客',
             articles: x,
@@ -56,9 +57,9 @@ blog.get('/', function (request, response) {
         }));
 });
 // Index of a tag
-blog.get('/tag/:id', function (request, response) {
+blog.get('/tag/:id', function(request, response) {
     Tag.findById(request.params.id, { include: [Article] })
-        .then(x => response.render('blog.html', {
+        .then(x => response.render('blog/blog.html', {
             title: x.name,
             sub_title: '标签',
             articles: x.articles,
@@ -67,14 +68,14 @@ blog.get('/tag/:id', function (request, response) {
         }));
 });
 // Index of a category
-blog.get('/cate/:name', function (request, response) {
+blog.get('/cate/:name', function(request, response) {
     Article.findAll({
-        include: [{
-            model: Category,
-            where: { name: request.params.name }
-        }]
-    })
-        .then(x => response.render('blog.html', {
+            include: [{
+                model: Category,
+                where: { name: request.params.name }
+            }]
+        })
+        .then(x => response.render('blog/blog.html', {
             title: x.title,
             sub_title: '类别',
             articles: x,
@@ -83,11 +84,11 @@ blog.get('/cate/:name', function (request, response) {
         }));
 });
 // Search result
-blog.get('/search', function (request, response) {
+blog.get('/search', function(request, response) {
     Article.findAll({
-        where: { title: { $like: '%' + request.query.keyword + '%' } }
-    })
-        .then(x => response.render('blog.html', {
+            where: { title: { $like: '%' + request.query.keyword + '%' } }
+        })
+        .then(x => response.render('blog/blog.html', {
             title: request.query.keyword,
             sub_title: '搜索结果',
             articles: x,
@@ -96,15 +97,15 @@ blog.get('/search', function (request, response) {
         }));
 });
 // Blog editor
-blog.get('/blog/publish', function (request, response) {
-    response.render('publish.html');
+blog.get('/publish', function(request, response) {
+    response.render('blog/publish.html');
 });
 // Article page
-blog.get('/blog/:id', function (request, response) {
+blog.get('/:id', function(request, response) {
     Article.findOne({
-        where: { id: request.params.id }
-    })
-        .then(x => response.render('article.html', {
+            where: { id: request.params.id }
+        })
+        .then(x => response.render('blog/article.html', {
             article: x,
             article_content: marked(x.content),
             tags: request.tags,
@@ -112,47 +113,47 @@ blog.get('/blog/:id', function (request, response) {
         }));
 });
 // Publish article
-blog.post('/api/publish', function (request, response) {
+blog.post('/api/publish', function(request, response) {
     var article;
     Promise.all([
-        Promise.all(
-            request.body.tags.map(
-                x => Tag.findOne({ where: { name: x } })
-            )),
-        Promise.all([
-            Article.create({
-                title: request.body.title,
-                summary: request.body.summary,
-                content: request.body.content
-            })
+            Promise.all(
+                request.body.tags.map(
+                    x => Tag.findOne({ where: { name: x } })
+                )),
+            Promise.all([
+                Article.create({
+                    title: request.body.title,
+                    summary: request.body.summary,
+                    content: request.body.content
+                })
                 .then(x => article = x),
-            Category.findOne({
-                where: { name: request.body.cate }
-            })
-        ])
+                Category.findOne({
+                    where: { name: request.body.cate }
+                })
+            ])
             .then(
-            x => article.setCategory(x[1]),
+                x => article.setCategory(x[1]),
+                x => response.json({
+                    result: "failed",
+                    message: x[0] + x[1]
+                })),
+        ])
+        .then(x => article.setTags(x[0]),
             x => response.json({
                 result: "failed",
                 message: x[0] + x[1]
-            })),
-    ])
-        .then(x => article.setTags(x[0]),
-        x => response.json({
-            result: "failed",
-            message: x[0] + x[1]
-        }))
+            }))
         .then(() => response.json({
             result: "success",
             url: "/blog/" + article.id
         }), x => response.json(x));
 });
 // Get tags
-blog.get('/api/tags', function (request, response) {
+blog.get('/api/tags', function(request, response) {
     response.json(request.tags)
 });
 // Add a tag
-blog.post('/api/tags', function (request, response) {
+blog.post('/api/tags', function(request, response) {
     Tag.create({ name: request.body.name })
         .then(x => response.json({
             result: "success",
@@ -160,15 +161,15 @@ blog.post('/api/tags', function (request, response) {
         }), x => response.json(x));
 });
 // Get categories
-blog.get('/api/categories', function (request, response) {
+blog.get('/api/categories', function(request, response) {
     response.json(request.Categories)
 });
 // Add a category
-blog.post('/api/categories', function (request, response) {
+blog.post('/api/categories', function(request, response) {
     Category.create({
-        name: request.body.name,
-        title: request.body.title
-    })
+            name: request.body.name,
+            title: request.body.title
+        })
         .then(x => response.json({
             result: "success",
             url: ""

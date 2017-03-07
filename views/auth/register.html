@@ -1,23 +1,15 @@
-{% extends "base.html" %} {% block title %} 注册用户 {% endblock %} {% block content %}
+{% extends "../base.html" %} {% block title %} 注册用户 {% endblock %} {% block content %}
 
 
 <form action="" method="POST" class="form-horizontal" role="form" style="padding-top:50px">
-    {% csrf_token %}
     <div class="form-group">
         <legend>注册用户</legend>
-    </div>
-    <div class="form-group {% if user_exist %}has-error{% endif %}">
-        <label for="username" class="col-sm-2 control-label">用户名</label>
-        <div class="col-sm-6">
-            <input type="text" name="username" class="form-control" value="{{username}}" required="required" pattern="" title=""> {% if user_exist %}
-            <span class="help-block">用户名已存在或格式错误</span> {% endif %}
-        </div>
     </div>
     <div class="form-group {% if mail_error %}has-error{% endif %}">
         <label for="mail" class="col-sm-2 control-label">电子邮件</label>
         <div class="col-sm-6">
             <input type="text" name="mail" class="form-control" value="{{mail}}" required="required" pattern="" title=""> {% if mail_error %}
-            <span class="help-block">邮件格式错误</span> {% endif %}
+            <span class="help-block">邮件格式错误或已存在</span> {% endif %}
         </div>
     </div>
     <div class="form-group">

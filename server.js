@@ -3,17 +3,16 @@ var express = require('express');
 var swig = require('swig');
 var bodyparser = require('body-parser');
 var marked = require('marked');
-var favicon = require('serve-favicon');
 var path = require('path');
 // Import other modules
 var blog = require('./blog');
+var auth = require('./auth');
 //===========================WebServer===========================
 
 //Initialize and setup web framework
 var app = express();
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
-app.use(favicon(path.join(__dirname, 'static', 'favicon.ico')));
 app.use('/static', express.static('static'));
 app.use(bodyparser());
 app.use(function(request, response, next) {
@@ -23,8 +22,8 @@ app.use(function(request, response, next) {
     next();
 });
 
-app.use('/blog',blog);
-
+app.use('/', auth);
+app.use('/blog', blog);
 // Pages
 // Home page
 app.get('/', function(request, response) {
@@ -42,6 +41,10 @@ app.get('/portfolio', function(request, response) {
     response.render('portfolio.html');
 });
 
+app.get('*', function(request, response) {
+    response.send("404");
+
+});
 // API
 
 
