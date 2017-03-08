@@ -6,6 +6,7 @@ var BearerStrategy = require('passport-http-bearer').Strategy;
 var LocalStrategy = require('passport-local').Strategy;
 var auth = express.Router();
 var crypto = require('crypto');
+var uuid = require('node-uuid');
 module.exports = auth;
 var tokens = {};
 
@@ -37,6 +38,21 @@ passport.use('local', new LocalStrategy(
     }
 ))
 
+passport.use('bearer', new BearerStrategy(
+    (token, done) => {
+        if (tokens[token] === undefined) {
+            return done(null, false);
+        }
+        if (Date.now() - tokens[token].create_time > 60 * 60 * 1000) {
+            delete tokens[token];
+            return done(null, false);
+        }
+        User.findById(tokens[token].user_id).then(
+            x => done(null, x)
+        );
+    }
+))
+
 passport.serializeUser(function(user, done) {
     done(null, user.id);
 });
@@ -48,10 +64,12 @@ passport.deserializeUser(function(id, done) {
         });
 });
 
+
+
 auth.use(session({ secret: 'nova', resave: false, saveUninitialized: false }));
 auth.use(passport.initialize());
 auth.use(passport.session());
-
+auth.use('/api/*', passport.authenticate('bearer', { session: false }))
 auth.get('/register', (req, res) => {
     res.render('auth/register.html');
 });
@@ -90,7 +108,17 @@ auth.get('/login', (req, res) => {
 
 auth.post('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }));
 
-
-passport.use(new BearerStrategy((token, done) => {
-    return done(null, user);
-}))
+auth.post('/gettoken', (req, res) => {
+    User.findOne({ where: { mail: req.body.username } })
+        .then(x => {
+            if (!x) {
+                res.json({ result: "failed", msg: "User not existed" });
+            }
+            if (x.password != crypto.createHmac('sha256', req.body.password).digest('hex')) {
+                res.json({ result: "failed", msg: "Wrong password" });
+            }
+            var token = new Buffer(uuid.v1().replace(/-/g, ''), 'hex').toString('base64').replace(/=/g, '');
+            tokens.token = { user_id: x.id, create_time: Date.now() };
+            res.json({ result: "succeed", token: token });
+        })
+})
