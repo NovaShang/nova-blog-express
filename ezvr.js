@@ -10,7 +10,7 @@ var Model = sequelize.define('model', {
     name: Sequelize.STRING,
     urn: Sequelize.STRING,
     shared: Sequelize.BOOLEAN,
-    description: Sequelize.TEXT
+    description: Sequelize.TEXT,
 });
 
 var ezvr = express.Router();
@@ -18,11 +18,24 @@ module.exports = ezvr;
 
 ezvr.use((req, res, next) => {});
 
+ezvr.get('/ezvr', (req, res) => {
+    res.render("ezvr/index.html");
+});
+
+ezvr.get('/ezvr/model/:id', (req, res) => {
+
+});
+
+ezvr.get('/ezvr/vrmodel/:id', (req, res) => {
+
+});
+
 ezvr.get('/api/models', (req, res) => {
     Model.findAll()
 });
 ezvr.post('/api/models', (req, res) => {
 
-})
+});
+ezvr.post()
 
 ezvr.use()

@@ -7,6 +7,7 @@ var path = require('path');
 // Import other modules
 var blog = require('./blog');
 var auth = require('./auth');
+var ezvr = require('./ezvr');
 //===========================WebServer===========================
 
 //Initialize and setup web framework
@@ -24,6 +25,8 @@ app.use(function(request, response, next) {
 
 app.use('/', auth);
 app.use('/blog', blog);
+app.use('/', ezvr);
+
 // Pages
 // Home page
 app.get('/', function(request, response) {

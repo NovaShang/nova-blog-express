@@ -6,8 +6,10 @@ var BearerStrategy = require('passport-http-bearer').Strategy;
 var LocalStrategy = require('passport-local').Strategy;
 var auth = express.Router();
 var crypto = require('crypto');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
+
 module.exports = auth;
+
 var tokens = {};
 
 var db = new DB('auth', null, null, {
@@ -120,5 +122,5 @@ auth.post('/gettoken', (req, res) => {
             var token = new Buffer(uuid.v1().replace(/-/g, ''), 'hex').toString('base64').replace(/=/g, '');
             tokens.token = { user_id: x.id, create_time: Date.now() };
             res.json({ result: "succeed", token: token });
-        })
-})
+        });
+});

@@ -2,7 +2,7 @@ var express = require("express");
 var Sequelize = require("sequelize");
 var marked = require('marked');
 
-//============================DataModel==========================
+//====DataModel==========================
 
 //Initialize ORM framework
 var sequelize = new Sequelize('blog', null, null, {
@@ -29,8 +29,7 @@ Article.belongsTo(Category);
 Article.belongsToMany(Tag, { through: 'article2tag' });
 Tag.belongsToMany(Article, { through: 'article2tag' });
 
-// Router ===============================================
-
+//====Router==============================
 var blog = express.Router();
 module.exports = blog;
 
