@@ -16,18 +16,20 @@ var Model = sequelize.define('model', {
 var ezvr = express.Router();
 module.exports = ezvr;
 
-ezvr.use((req, res, next) => {});
-
 ezvr.get('/ezvr', (req, res) => {
     res.render("ezvr/index.html");
 });
 
 ezvr.get('/ezvr/model/:id', (req, res) => {
-
+    res.render('ezvr/model.html')
 });
 
 ezvr.get('/ezvr/vrmodel/:id', (req, res) => {
+    res.render('ezvr/vrmodel.html')
+});
 
+ezvr.get('/ezvr/upload', (req, res) => {
+    res.render('ezvr/vrmodel.html')
 });
 
 ezvr.get('/api/models', (req, res) => {
@@ -36,6 +38,3 @@ ezvr.get('/api/models', (req, res) => {
 ezvr.post('/api/models', (req, res) => {
 
 });
-ezvr.post()
-
-ezvr.use()

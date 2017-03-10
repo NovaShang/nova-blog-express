@@ -15,7 +15,8 @@ var app = express();
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.use('/static', express.static('static'));
-app.use(bodyparser());
+app.use(bodyparser.urlencoded());
+app.use(bodyparser.json());
 app.use(function(request, response, next) {
     response.header("Access-Control-Allow-Origin", '*');
     response.header("Access-Control-Allow-Headers", "X-Requested-With");
