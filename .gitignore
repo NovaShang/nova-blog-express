@@ -117,3 +117,7 @@ typings/
 # sqlite3 database
 
 .db
+
+# vscode
+
+.vscode

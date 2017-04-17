@@ -1,20 +1,10 @@
 <div class="right-column">
-
-    <form action="/blog/search">
-        <div class="input-group">
-            <input type="text" name="keyword" class="form-control" placeholder="搜索文章">
-            <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit">搜索</button>
-                    </span>
-        </div>
-    </form>
-    <p></p>
     <div class="panel panel-default">
         <div class="panel-heading">
             分类
         </div>
         <ul class="list-group"> {% for cate in cates %}
-            <a href="/blog/cate/{{cate.name}}">
+            <a href="{{config.urlbase}}/cate/{{cate.name}}">
                 <li class="list-group-item">{{cate.title}}</li>
             </a>
             {% endfor %}
@@ -27,7 +17,7 @@
         <div class="panel-body">
             <p>
                 {% for tag in tags %}
-                <a href="/blog/tag/{{tag.id}}"> <span class="label label-primary">{{tag.name}}</span></a>
+                <a href="{{config.urlbase}}/tag/{{tag.id}}"> <span class="label label-primary">{{tag.name}}</span></a>
                 {% endfor %}
             </p>
         </div>

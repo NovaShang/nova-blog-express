@@ -1,0 +1,44 @@
+.nav-item {
+    margin-left: 20px;
+}
+
+body {
+    background-color: #EEE;
+}
+
+.navbar {
+    box-shadow: 0px 1px 5px 3px rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    padding: 0px;
+}
+
+.navbar-nav {
+    flex-direction: row;
+}
+
+.navbar-brand>img {
+    height: 64px;
+}
+
+.content-card {
+    background-color: white;
+    padding: 30px;
+    box-shadow: 0px 1px 5px 2px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width:576px) {
+    .navbar>.container {
+        width: 100%;
+        flex-direction: column;
+    }
+    .navbar-nav {
+        width: 100%;
+        justify-content: center;
+    }
+    body>.container {
+        padding: 0px;
+    }
+    .navbar-text {
+        display: none;
+    }
+}

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+<!--标题-->
+{% block title %}Publish New Article{% endblock %}
+<!--引用-->
+{% block head %}
+<script src="/js/vue.js"></script>
+<script src="/js/vue-resource.js"></script>
+<script src="/js/marked.js"></script>
+<script src="/js/hightlight.js"></script>
+<script src="/js/lodash.js"></script>
+{% endblock %}
+<!--正文-->
+{% block content %}
+<!--博文编辑器-->
+<div id="blog-editor">
+    <!--编辑器功能区-->
+    <div class="row">
+        <div class="col-sm-5">
+            <input type="text" v-model="title" class="form-control col-sm-5" placeholder="文章标题">
+        </div>
+        <div class="col-sm-4" style="white-space: nowrap">
+            <button type="button" v-on:click="showTagPanel=true" class="btn btn-default" id="btn-addtag"><span class="glyphicon glyphicon-plus"></span>标签</button>
+            <button v-for="tag in currentTags" class="label label-primary tag" style="font-size: 100%;margin: 3px;border: none;" v-on:click="tags.push(currentTags.pop()) ">${ tag }</button>
+            <div class="popover bottom " v-show="showTagPanel " style="top:35px; display: block; ">
+                <div class="arrow " style="left: 50px; "></div>
+                <h3 class="popover-title ">添加标签 <button type="button " class="pull-right " style="border: none;background: transparent; " v-on:click="showTagPanel=false "><span class="glyphicon glyphicon-remove "></span></button></h3>
+                <div class="popover-content ">
+                    <div class="input-group ">
+                        <input type="text " v-model="newtag " class="form-control " id="text-newtag " placeholder="新标签 ">
+                        <span class="input-group-btn ">
+                            <button type="button " class="btn btn-default " v-on:click="addNewTag ">
+                                <span class="glyphicon glyphicon-plus "></span>
+                        </button>
+                        </span>
+                    </div>
+                    <p style="word-break: break-all;line-height: 2;;margin-top: 10px; ">
+                        <button v-for="tag in tags " v-on:click="currentTags.push(tags.pop()) " style="font-size: 100%;margin-right: 5px;border: none; " class="label label-primary ">${ tag }</button>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 ">
+            <div class="input-group ">
+                <select id="select-cate " class="form-control " v-model="currentCate " id="select-cate ">
+                    <option value="default ">请选择分类</option>
+                    <option v-for="cate in cates " v-bind:value="cate.name ">${cate.title}</option>
+                </select>
+                <span class="input-group-btn ">
+                    <button type="button " class="btn btn-default "  v-on:click="showCatePanel=true "><span class="glyphicon glyphicon-edit "></span></button>
+                </span>
+            </div>
+            <!--分类编辑对话框-->
+            <div class="modal" v-show="showCatePanel" tabindex="-1" role="dialog" style="display: block">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" @click="showCatePanel=false " aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="myModalLabel">编辑分类</h4>
+                        </div>
+                        <div class="modal-body">
+                            <label for="input-cate-name ">分类名称</label>
+                            <input type="text " v-model="newCateName " id="input-cate-name " class="form-control ">
+                            <label for="input-cate-name ">分类标题</label>
+                            <input type="text " v-model="newCateTitle " id="input-cate-name " class="form-control ">
+                            <br>
+                            <ul class="list-group " style="width:100% ">
+                                <li v-for="cate in cates " class="list-group-item ">${cate.title}</li>
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" @click="addNewCate " class="btn btn-success" data-dismiss="modal">添加</button>
+                            <button type="button" @click="showCatePanel=false " class="btn btn-primary">完成</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row " style="margin-top: 10px; ">
+        <div class="col-sm-10 ">
+            <input type="text " v-model="summary " class="form-control " id="text-summary " placeholder="文章摘要 ">
+        </div>
+        <div class="col-sm-2 ">
+            <button type="button " @click="publish " class="btn btn-primary btn-block " id="publish-button ">发布</button>
+        </div>
+    </div>
+    <div id="markdown-editor " class="row " style="margin-top: 10px; ">
+        <div class="col-sm-6 " style="height: 100%; ">
+            <textarea :value="mdSrc " @input="update " id="editor-left " class="form-control " spellcheck="false " style="height: 100% "></textarea>
+        </div>
+
+        <!--编辑区-->
+        <!--预览区-->
+        <div v-html="mdCompiled " id="editor-right " class="col-sm-6 " style="height: 100%;overflow-y: scroll; "></div>
+    </div>
+</div>
+<!--脚本-->
+<script>
+    var app = new Vue({
+        delimiters: ['${', '}'],
+        el: '#blog-editor',
+        data: {
+            title: '',
+            summary: '',
+            currentCate: 'default',
+            mdSrc: '',
+            newtag: '',
+            showTagPanel: false,
+            showCatePanel: false,
+            tags: [],
+            currentTags: [],
+            cates: [],
+            newCateName: '',
+            newCateTitle: ''
+        },
+        computed: {
+            mdCompiled: function() {
+                return marked(this.mdSrc, {
+                    sanitize: true
+                });
+            }
+        },
+        methods: {
+            update: _.debounce(function(e) {
+                this.mdSrc = e.target.value;
+            }, 300),
+            publish: function() {
+                $.post('{{config.urlbase}}/api/articles', {
+                    title: this.title,
+                    cate: this.currentCate,
+                    tags: this.currentTags,
+                    summary: this.summary,
+                    content: this.mdSrc
+                }, function(data) {
+                    if (data.result == "success ") {
+                        window.location.href = data.url;
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            },
+            addNewTag: function() {
+                this.currentTags.push(this.newtag);
+                $.post("{{config.urlbase}}/api/tags ", {
+                    name: this.newtag
+                }, function(data) {
+                    if (data.result != "success ") {
+                        alert(data.message);
+                    }
+                });
+                this.newtag = '';
+            },
+            addNewCate: function() {
+                $.post("{{config.urlbase}}/api/categories ", {
+                    name: this.newCateName,
+                    title: this.newCateTitle
+                }, function(data) {
+                    if (data.result != "success ") {
+                        alert(data.message);
+                    } else {
+                        $.get("{{config.urlbase}}/api/categories ", function(data) {
+                            app.cates = data;
+                        })
+                    }
+                });
+                this.newCateName = '';
+                this.newCateTitle = '';
+            }
+
+
+        }
+    });
+    $.get("{{config.urlbase}}/api/tags ", function(data) {
+        app.tags = data.map(x => x.name);
+    });
+    $.get("{{config.urlbase}}/api/categories ", function(data) {
+        app.cates = data;
+    })
+    document.getElementById("markdown-editor ").style.height = window.innerHeight - 150 + "px ";
+</script>
+
+{% endblock %}

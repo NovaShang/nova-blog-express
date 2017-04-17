@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+<!--标题-->
+{% block title %}Publish New Article{% endblock %}
+<!--引用-->
+{% block head %}
+<script src="/js/vue.js"></script>
+<script src="/js/vue-resource.js"></script>
+<script src="/js/marked.js"></script>
+<script src="/js/hightlight.js"></script>
+<script src="/js/lodash.js"></script>
+{% endblock %}
+<!--正文-->
+{% block content %}
+
+<!--脚本-->
+<script>
+    var app = new Vue({
+        delimiters: ['${', '}'],
+        el: '#blog-editor',
+        data: {
+            title: '',
+            summary: '',
+            currentCate: 'default',
+            mdSrc: '',
+            newtag: '',
+            showTagPanel: false,
+            showCatePanel: false,
+            tags: [],
+            currentTags: [],
+            cates: [],
+            newCateName: '',
+            newCateTitle: ''
+        },
+        computed: {
+            mdCompiled: function() {
+                return marked(this.mdSrc, {
+                    sanitize: true
+                });
+            }
+        },
+        methods: {
+            update: _.debounce(function(e) {
+                this.mdSrc = e.target.value;
+            }, 300),
+            publish: function() {
+                $.post('/api/articles', {
+                    title: this.title,
+                    cate: this.currentCate,
+                    tags: this.currentTags,
+                    summary: this.summary,
+                    content: this.mdSrc
+                }, function(data) {
+                    if (data.result == "success ") {
+                        window.location.href = data.url;
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            },
+            addNewTag: function() {
+                this.currentTags.push(this.newtag);
+                $.post("/api/tags ", {
+                    name: this.newtag
+                }, function(data) {
+                    if (data.result != "success ") {
+                        alert(data.message);
+                    }
+                });
+                this.newtag = '';
+            },
+            addNewCate: function() {
+                $.post("/api/categories ", {
+                    name: this.newCateName,
+                    title: this.newCateTitle
+                }, function(data) {
+                    if (data.result != "success ") {
+                        alert(data.message);
+                    } else {
+                        $.get("/api/categories ", function(data) {
+                            app.cates = data;
+                        })
+                    }
+                });
+                this.newCateName = '';
+                this.newCateTitle = '';
+            }
+
+
+        }
+    });
+    $.get("/api/tags ", function(data) {
+        app.tags = data.map(x => x.name);
+    });
+    $.get("/api/categories ", function(data) {
+        app.cates = data;
+    })
+    document.getElementById("markdown-editor ").style.height = window.innerHeight - 150 + "px ";
+</script>
+
+{% endblock %}

@@ -5,7 +5,7 @@
     "main": "server.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "migrate": ""
+        "migrate": "node model.js migrate"
     },
     "keywords": [
         "blog"
@@ -18,7 +18,8 @@
         "koa-passport": "^3.0.0",
         "koa-router": "^7.0.0",
         "koa-static": "^3.0.0",
-        "koa-swig": "^2.2.1",
+        "koa-tiny-blog": "^1.0.0",
+        "koa2-swig": "^2.2.1",
         "sequelize": "^3.30.2",
         "sqlite3": "^3.1.8"
     },

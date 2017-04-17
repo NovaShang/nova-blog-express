@@ -1,0 +1,25 @@
+{% extends "base.html" %} {% block head %}
+<link href="/css/highlight.css" rel="stylesheet" type="text/css" /> {% endblock %} {% block metadata %}
+<meta name="description" content="{{article.summary}}"> {% endblock %} {% block title %} {{article.title}} - Nova {% endblock %} {% block content %}
+
+
+<div class="content-card">
+
+
+    <div class="page-header">
+        <h1>{{article.title}}</h1>
+        <p>{{article.createdAt|date('Y-m-d H:i:s', -480, 'CCT')}}</p>
+    </div>
+
+    <div class="article-content">
+        {{article_content | safe }}
+    </div>
+</div>
+<div class="col-xs-12 col-sm-4 col-md-3">
+    {% include "right-column.html" %}
+</div>
+<script src="/js/highlight.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad()
+</script>
+{% endblock %}
