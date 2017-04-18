@@ -30,6 +30,7 @@ router.get('/', async ctx => {
         pages: Math.ceil(result.count / config.perpage),
         cates: ctx.cates,
         tags: ctx.tags,
+        nav: "blog"
     });
 });
 
@@ -53,6 +54,7 @@ router.get('/tag/:id', async ctx => {
         pages: Math.ceil(num / config.perpage),
         cates: ctx.cates,
         tags: ctx.tags,
+        nav: "blog"
     });
 });
 
@@ -75,18 +77,20 @@ router.get('/cate/:name', async ctx => {
         pages: Math.ceil(result.count / config.perpage),
         cates: ctx.cates,
         tags: ctx.tags,
+        nav: "blog"
     });
 });
 
 // 文章正文页
 router.get('/articles/:id', async ctx => {
-    let article = await db.Article.findOne({ where: { id: ctx.params.id } });
+    let article = await db.Article.findOne({ where: { id: ctx.params.id }, include: [db.Tag, db.Category] });
     if (!article) { ctx.redirect('/blog'); return; }
     ctx.body = await ctx.render('article', {
         article: article,
         article_content: marked(article.content),
         tags: ctx.tags,
         cates: ctx.cates,
+        nav: "blog"
     });
 });
 

@@ -18,25 +18,29 @@
     <header>
         <!--导航条-->
 
-        <nav class="navbar navbar-inverse bg-inverse">
+        <nav class="navbar fixed-top navbar-inverse navbar-bg-trans-dark">
             <div class="container d-flex align-items-center ">
                 <a class="navbar-brand" href="#">       
-                    <img src="/svg/logo.svg" alt="<N> NOVA">
+                    <img class="brand-logo" src="/svg/logo.svg" alt="<N>">
+                    <span style="margin-left:15px;vertical-align: middle;">
+                         N O V A
+                    </span>               
+                    <span class="navbar-text" style="font-size:0.75em;margin-left:20px;">
+                        高尚的博客
+                    </span>
                 </a>
-                <span class="navbar-text">
-                    NOVA
-                </span>
+
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
+                    <li class="nav-item {% if nav=='home' %}active{% endif %}">
                         <a class="nav-link" href="/">首页</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item {% if nav=='blog' %}active{% endif %}">
                         <a class="nav-link" href="/blog">博客</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item {% if nav=='portfolio' %}active{% endif %}">
                         <a class="nav-link" href="/portfolio">作品集</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item {% if nav=='about' %}active{% endif %}">
                         <a class="nav-link" href="/about">关于我</a>
                     </li>
                 </ul>
@@ -52,31 +56,31 @@
 
 
     <!--页脚-->
-    <footer>
-        <div class="container">
-            <div class="row">
-                <h4>Koa Tiny Blog <small> by Nova</small></h4>
-            </div>
-        </div>
-    </footer>
+    {% include "footer.html" %}
     <script>
-        $(window).scroll(function(e) {
-            if (window.scrollY > 20) {
-                hided = true;
-                $('.navbar-brand').hide();
-                $('.content-card').css('margin-top', 90);
-                $('.navbar').addClass('fixed-top');
-                $('.navbar-text').show();
+        var status = 0;
+        $(window).scroll(function() {
+            if ($(window).scrollTop() < 60) {
+                if (status != 1) {
+                    status = 1;
+                    $(".brand-logo").stop().animate({
+                        height: "90px",
+                    }, 300, "swing", function() {
+                        status = 0;
+                    });
+                }
             } else {
-                $('.navbar-brand').show();
-                $('.navbar-text').hide();
-
-                $('.navbar').removeClass('fixed-top');
-                $('.content-card').css('margin-top', 0);
+                if (status != 2) {
+                    status = 2;
+                    $(".brand-logo").stop().animate({
+                        height: "0px",
+                    }, 300, "swing", function() {
+                        status = 0;
+                    });
+                }
 
             }
-            console.log(window.scrollY);
-        })
+        });
     </script>
 </body>
 

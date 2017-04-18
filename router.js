@@ -12,9 +12,34 @@ router.use('/api', api.routes());
 // 为Blog绑定url
 router.use('/blog', blog.routes());
 
+
+// 作品集
+router.get('/portfolio', async ctx => {
+    let page = parseInt(ctx.query.page);
+    if (!page) { page = 1; }
+    let result = await db.Work.findAndCountAll({
+        order: 'createdAt DESC',
+        offset: (page - 1) * config.perpage,
+        limit: config.perpage
+    });
+    ctx.body = await ctx.render('portfolio', {
+        works: result.rows,
+        pages: Math.ceil(result.count / config.perpage),
+        nav: "portfolio"
+    });
+});
+
+
+
 // 主页
 router.get('/', async ctx => {
-    ctx.body = await ctx.render('home');
+    let result = await db.Trace.findAll({
+        order: 'createdAt DESC',
+        limit: config.perpage
+    });
+    ctx.body = await ctx.render('home', {
+        traces: result
+    });
 })
 
 // Blog editor
