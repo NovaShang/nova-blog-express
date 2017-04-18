@@ -1,7 +1,7 @@
 /*背景和导航栏*/
 
 body {
-    background-color: #EEE;
+    background-color: #DDD;
 }
 
 body>.container {
@@ -50,9 +50,17 @@ a:hover {
 /*卡片*/
 
 .content-card {
-    background-color: white;
+    background-color: #FFF;
     padding: 0px;
     box-shadow: 0px 1px 5px 2px rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+}
+
+/*页脚*/
+
+.footer-icon>img{
+    height: 24px;
+    width: 24px;
 }
 
 
@@ -64,7 +72,7 @@ a:hover {
 }
 
 .home-card {
-    background-color: #DDD;
+    background-color: #222;
     margin: 20px;
     padding: 15px;
     display: flex;
@@ -79,11 +87,12 @@ a:hover {
     margin-left: 20px;
     display: flex;
     flex-direction: column;
-    color: black;
+    color: #DDD;
 }
 
 .home-card-time {
     font-size: 0.8em;
+    color: #888;
 }
 
 .home-card-type {
@@ -111,12 +120,39 @@ a:hover {
     height: 100%;
     width: 100%;
     padding: 40px;
+
+}
+
+.article-card-header-article{
     padding-top: 100px;
     padding-bottom: 20px;
 }
 
+.article-card-header-index{
+    padding-top: 20px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+}
+
 .article-card-content {
     padding: 40px;
+}
+
+.article-card-content-index {
+    padding:5px 10px;
+}
+
+.article-title-index {
+    border-left: 4px solid white;
+    padding-left: 15px;
+}
+
+.article-title-index>h1{
+    font-size: 30px;
+}
+.article-title-index>p{
+    font-size: 14px;
+    margin-bottom: 0px;
 }
 
 .article-title {
@@ -132,16 +168,25 @@ a:hover {
 }
 
 .index-card-mask {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: #EEE;
     height: 100%;
     width: 100%;
     padding: 20px;
 }
 
+
+
 .badge-inverse {
     border: 1px solid rgba(255, 255, 255, 0.8);
     margin: 4px;
 }
+
+.badge-light {
+    border: 1px solid #333;
+    margin: 4px;
+    color: #333
+}
+
 
 @media (max-width:576px) {
     .navbar>.container {

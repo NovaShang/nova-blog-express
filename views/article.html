@@ -6,7 +6,7 @@
 <div class="content-card">
 
     <div class="article-card-header" style="background-image:url('{% if article.thumb %}{{article.thumb}}{% elif article.category.thumb %}{{article.category.thumb}}{% else %}http://novashang.com/static/img/home_bg.png{% endif %}')">
-        <div class="article-card-header-mask">
+        <div class="article-card-header-mask article-card-header-article">
             <div class="article-title">
                 <h1>{{article.title}}</h1>
                 <p>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}} 浏览:{{article.count}}</p>
