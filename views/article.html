@@ -3,15 +3,16 @@
 <meta name="description" content="{{article.summary}}"> {% endblock %} {% block title %} {{article.title}} - Nova {% endblock %} {% block content %}
 
 
-<div class="content-card">
-    <div class="article-card-header" style="background-image:url('{% if article.thumb %}{{article.thumb}}{% elif article.category.thumb %}{{article.category.thumb}}{% else %}http://novashang.com/static/img/home_bg.png{% endif %}')">
-        <div class="article-card-header-mask article-card-header-article">
+<div class="card">
+    <div class="card-header " style="background-image:url('{% if article.thumb %}{{article.thumb}}{% elif article.category.thumb %}{{article.category.thumb}}{% else %}http://novashang.com/static/img/home_bg.png{% endif %}')">
+
+        <div class="card-mask article-header">
             <div class="article-title">
                 <h1>{{article.title}}</h1>
                 <p>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}} / 分类:{{article.category.title}} / 浏览:{{article.count}}</p>
             </div>
 
-            <div class="tags">{% for tag in article.tags %}<span class="badge badge-inverse">{{tag.name}}</span>{% endfor %}</div>
+            <div class="tags">{% for tag in article.tags %}<span class="tag tag-dark">{{tag.name}}</span>{% endfor %}</div>
             <p class="summary">{{article.summary}}</p>
         </div>
     </div>
