@@ -5,27 +5,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-    <script src="/js/jquery.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/bootstrap-grid.min.css" rel="stylesheet" type="text/css" />
     <link href="/css/blog.css" rel="stylesheet" type="text/css" />
     <link href="/favicon.ico" rel="icon" type="image/x-icon" />
     <title>&lt;NOVA&gt; 高尚个人站</title>
 </head>
 
-<body style="background-color:black">
+<body style="background-color:black;padding-top:0px;">
     <!--头部！-->
     <header style="color:white;background-color:black;background-image:url('/img/home_bg.png');background-position: top center;">
-        <div class="d-flex align-items-center flex-column" style="padding-top:100px;">
+        <div style="display:flex;align-items:center;flex-direction:column;padding-top:100px;">
             <img src="/svg/logo.svg" alt="" style="height:200px;">
             <p style="margin-top:-25px;font-size:36px;">N O V A</p>
             <p style="margin-top:20px;font-size:20px;">高尚个人站</p>
             <p style="color:gray">BIM and Coding</p>
             <p style="color:gray">Thinking and Believing</p>
             <div>
-                <a href="/portfolio"><button type="button" class="btn btn-outline-secondary">作品集</button></a>
-                <a href="/blog"> <button type="button" class="btn btn-outline-secondary" style="margin:40px">博客</button></a>
-                <a href="/about"> <button type="button" class="btn btn-outline-secondary">关于我</button></a>
+                <a href="/portfolio"><button type="button" class="btn btn-gray">作品集</button></a>
+                <a href="/blog"> <button type="button" class="btn btn-gray" style="margin:40px">博客</button></a>
+                <a href="/about"> <button type="button" class="btn btn-gray">关于我</button></a>
             </div>
         </div>
     </header>
@@ -48,6 +46,7 @@
             </div>
             <div class="col-xs-12 col-sm-4 col-md-3">
                 <h6 style="margin-left:20px;color:#BBB">推广</h6>
+                {% include "ad.html" %}
 
             </div>
         </div>

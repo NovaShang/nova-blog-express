@@ -7,46 +7,16 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no"> {% block metadata %} {% endblock %}
     <script src="/js/jquery.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/bootstrap-grid.min.css" rel="stylesheet" type="text/css" />
     <link href="/css/blog.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" /> {% block head %} {% endblock %}
     <title>{% block title %}Koa Tiny Blog{% endblock title %}</title>
 </head>
 
 <body>
-    <header>
-        <!--导航条-->
 
-        <nav class="navbar fixed-top navbar-inverse navbar-bg-trans-dark">
-            <div class="container d-flex align-items-center ">
-                <a class="navbar-brand" href="#">       
-                    <img class="brand-logo" src="/svg/logo.svg" alt="<N>">
-                    <span style="margin-left:15px;vertical-align: middle;">
-                         N O V A
-                    </span>               
-                    <span class="navbar-text" style="font-size:0.75em;margin-left:20px;">
-                        高尚的博客
-                    </span>
-                </a>
+    {% include "header.html" %}
 
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item {% if nav=='home' %}active{% endif %}">
-                        <a class="nav-link" href="/">首页</a>
-                    </li>
-                    <li class="nav-item {% if nav=='blog' %}active{% endif %}">
-                        <a class="nav-link" href="/blog">博客</a>
-                    </li>
-                    <li class="nav-item {% if nav=='portfolio' %}active{% endif %}">
-                        <a class="nav-link" href="/portfolio">作品集</a>
-                    </li>
-                    <li class="nav-item {% if nav=='about' %}active{% endif %}">
-                        <a class="nav-link" href="/about">关于我</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </header>
 
 
     <!--正文-->
@@ -57,31 +27,7 @@
 
     <!--页脚-->
     {% include "footer.html" %}
-    <script>
-        var status = 0;
-        $(window).scroll(function() {
-            if ($(window).scrollTop() < 60) {
-                if (status != 1) {
-                    status = 1;
-                    $(".brand-logo").stop().animate({
-                        height: "90px",
-                    }, 300, "swing", function() {
-                        status = 0;
-                    });
-                }
-            } else {
-                if (status != 2) {
-                    status = 2;
-                    $(".brand-logo").stop().animate({
-                        height: "0px",
-                    }, 300, "swing", function() {
-                        status = 0;
-                    });
-                }
 
-            }
-        });
-    </script>
 </body>
 
 </html>

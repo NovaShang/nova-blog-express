@@ -4,22 +4,39 @@
 
 
 <div class="content-card">
-
     <div class="article-card-header" style="background-image:url('{% if article.thumb %}{{article.thumb}}{% elif article.category.thumb %}{{article.category.thumb}}{% else %}http://novashang.com/static/img/home_bg.png{% endif %}')">
         <div class="article-card-header-mask article-card-header-article">
             <div class="article-title">
                 <h1>{{article.title}}</h1>
-                <p>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}} 浏览:{{article.count}}</p>
+                <p>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}} / 分类:{{article.category.title}} / 浏览:{{article.count}}</p>
             </div>
 
-            <p>{% for tag in article.tags %}<span class="badge badge-inverse">{{tag.name}}</span>{% endfor %}</p>
-            <p class="summary">最近做的Revit二次开发项目中需要获取族的缩略图，分两种情况：获取硬盘上的RFA文件的缩略图和获取当前RVT文档中已载入族的缩略图。RevitAPI文档中没有相关信息，搜遍中文互联网，找不到现成的解决方案。最后在Autodesk的一个大神的技术博客上找到了点思路，自己尝试了一下最后写出代码。分享下。</p>
+            <div class="tags">{% for tag in article.tags %}<span class="badge badge-inverse">{{tag.name}}</span>{% endfor %}</div>
+            <p class="summary">{{article.summary}}</p>
         </div>
     </div>
     <div class="article-card-content">
         <div class="article-content">
             {{article_content | safe }}
         </div>
+    </div>
+    <div>
+        <a>
+            上一篇
+        </a>
+        <a>
+            下一篇
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-9">
+        <div class="content-card">
+            fasdf
+        </div>
+    </div>
+    <div class="col-3">
     </div>
 </div>
 <script src="/js/highlight.min.js"></script>

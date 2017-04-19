@@ -29,6 +29,12 @@ router.get('/portfolio', async ctx => {
     });
 });
 
+router.get('/about', async ctx => {
+    ctx.body = await ctx.render('about', {
+        nav: 'about'
+    })
+
+});
 
 
 // 主页
