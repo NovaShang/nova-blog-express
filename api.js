@@ -111,4 +111,25 @@ router.delete('/categories', async ctx => {
     ctx.body = { result: 'success', category: cate };
 });
 
+// 发布评论
+router.post('/comments', async ctx => {
+    let aid = parseInt(ctx.request.body.articleId)
+    if (!(ctx.request.body.content && ctx.request.body.uname && ctx.request.body.email && aid)) {
+        ctx.body = { result: 'failed', message: '请填写所有字段!' };
+        return;
+    }
+    let article = await db.Article.findById(aid);
+    if (!article) {
+        ctx.body = { result: 'failed', message: '文章不存在!' };
+        return;
+    }
+    let comment = await db.Comment.create({
+        uname: ctx.request.body.uname,
+        content: ctx.request.body.content,
+        articleId: aid,
+        email: ctx.request.body.email
+    });
+    ctx.body = { result: 'success', comment: comment };
+});
+
 module.exports = router;

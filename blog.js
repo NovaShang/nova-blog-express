@@ -83,15 +83,33 @@ router.get('/cate/:name', async ctx => {
 
 // 文章正文页
 router.get('/articles/:id', async ctx => {
-    let article = await db.Article.findOne({ where: { id: ctx.params.id }, include: [db.Tag, db.Category] });
+    let article = await db.Article.findOne({
+        where: { id: ctx.params.id },
+        include: [db.Tag, db.Category, db.Comment]
+    });
+    let pre = await db.Article.findOne({
+        where: { createdAt: { $lt: article.createdAt } },
+        attributes: ['id', 'title'],
+        order: 'createdAt DESC',
+    });
+    let next = await db.Article.findOne({
+        where: { createdAt: { $gt: article.createdAt } },
+        attributes: ['id', 'title'],
+        offset: 1,
+        order: 'createdAt',
+    });
     if (!article) { ctx.redirect('/blog'); return; }
     ctx.body = await ctx.render('article', {
         article: article,
         article_content: marked(article.content),
         tags: ctx.tags,
         cates: ctx.cates,
+        pre: pre,
+        next: next,
         nav: "blog"
     });
 });
+
+
 
 module.exports = router;

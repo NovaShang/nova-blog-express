@@ -26,10 +26,8 @@ const Category = sequelize.define('category', {
 });
 const BlogComment = sequelize.define('comment', {
     content: Sequelize.TEXT,
-    uid: Sequelize.STRING,
+    email: Sequelize.STRING,
     uname: Sequelize.STRING,
-    thumb: Sequelize.STRING,
-    replyto: Sequelize.INTEGER,
     hidden: Sequelize.BOOLEAN
 });
 const Work = sequelize.define('work', {
@@ -51,7 +49,7 @@ const Trace = sequelize.define('trace', {
 
 //建立模型间的关联
 Article.belongsTo(Category);
-BlogComment.belongsTo(Article);
+Article.hasMany(BlogComment);
 Article.belongsToMany(Tag, { through: 'article2tag' });
 Tag.belongsToMany(Article, { through: 'article2tag' });
 Work.belongsToMany(Tech, { through: 'work2tech' });

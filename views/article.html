@@ -2,46 +2,129 @@
 <link href="/css/highlight.css" rel="stylesheet" type="text/css" /> {% endblock %} {% block metadata %}
 <meta name="description" content="{{article.summary}}"> {% endblock %} {% block title %} {{article.title}} - Nova {% endblock %} {% block content %}
 
-
+<!--博文-->
 <div class="card">
+
+    <!--头部-->
     <div class="card-header " style="background-image:url('{% if article.thumb %}{{article.thumb}}{% elif article.category.thumb %}{{article.category.thumb}}{% else %}http://novashang.com/static/img/home_bg.png{% endif %}')">
-
-        <div class="card-mask article-header">
-            <div class="article-title">
-                <h1>{{article.title}}</h1>
-                <p>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}} / 分类:{{article.category.title}} / 浏览:{{article.count}}</p>
+        <div class="card-mask">
+            <div class="article-header">
+                <div class="article-title">
+                    <span id="article-id" style="display:none">{{article.id}}</span>
+                    <h1>{{article.title}}</h1>
+                    <p>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}} / 分类:{{article.category.title}} / 浏览:{{article.count}}</p>
+                </div>
+                <div class="tags">{% for tag in article.tags %}<span class="tag tag-dark">{{tag.name}}</span>{% endfor %}</div>
+                <p class="summary">{{article.summary}}</p>
             </div>
-
-            <div class="tags">{% for tag in article.tags %}<span class="tag tag-dark">{{tag.name}}</span>{% endfor %}</div>
-            <p class="summary">{{article.summary}}</p>
         </div>
     </div>
-    <div class="article-card-content">
+
+    <!--文章正文-->
+    <div class="card-content">
         <div class="article-content">
             {{article_content | safe }}
         </div>
     </div>
-    <div>
-        <a>
-            上一篇
-        </a>
-        <a>
-            下一篇
-        </a>
+
+    <!--导航到其他文章-->
+    <div class="card-content-row">
+        {% if pre %}
+        <a href="/blog/articles/{{pre.id}}" class="card-content-cell article-pre">
+            <img src="/svg/pre.svg" alt="">
+            <span class="hidden-mobile">{{pre.title}}</span>
+            <span class="show-mobile">上一篇</span>
+        </a> {% endif %} {% if next %}
+        <a href="/blog/articles/{{next.id}}" class="card-content-cell article-next">
+            <span class="hidden-mobile">{{next.title}}</span>
+            <span class="show-mobile">下一篇</span>
+            <img src="/svg/next.svg" alt="">
+        </a> {% endif %}
     </div>
 </div>
 
-<div class="row">
-    <div class="col-9">
-        <div class="content-card">
-            fasdf
+
+<div class="row" style="margin-top:20px;">
+
+    <!--评论-->
+    <div class="col-sm-8 col-xs-12">
+        <h5 class="block-title">评论</h5>
+
+        <!--评论列表-->
+        {% for comment in article.comments %}
+        <div class="card">
+            <div class="card-content">
+                <h5>
+                    {{comment.uname}} <small>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}}</small>
+                </h5>
+                <p>
+                    {{comment.content}}
+                </p>
+            </div>
         </div>
+        {% endfor %}
+
+        <!--发表评论-->
+        <form class="card">
+            <div class="card-content">
+                <h5>发表评论</h5>
+            </div>
+            <div class="card-content">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6">
+                        <div class="textbox">
+                            <span class="lable">邮箱 :</span>
+                            <input type="text" id="comment-email" name="email" placeholder="用于标识身份">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <div class="textbox">
+                            <span class="lable">昵称 :</span>
+                            <input type="text" id="comment-uname" name="uname" placeholder="将显示在评论上方">
+                        </div>
+                    </div>
+                </div>
+                <textarea class="textarea" id="comment-content" name="content" placeholder="评论正文" style="height:300px;"></textarea>
+            </div>
+            <div class="card-content-row">
+                <input type="button" class="card-content-cell card-content-cell-blue" id="submit-comment" value="发表评论">
+                </input>
+            </div>
+        </form>
+
+
     </div>
-    <div class="col-3">
+    <div class="col-sm-4 col-xs-12">
+        <h5 class="block-title">分类</h5>
+        {% include "components/categories.html" %}
+        <h5 class="block-title">标签</h5>
+        {% include "components/tags.html" %}
+        <h5 class="block-title">推广</h5>
+        {% include "components/ad.html" %}
+
     </div>
 </div>
 <script src="/js/highlight.min.js"></script>
 <script>
-    hljs.initHighlightingOnLoad()
+    hljs.initHighlightingOnLoad();
+    $(document).ready(function() {
+        $('#submit-comment').click(function() {
+            $.post('/api/comments', {
+                articleId: $('#article-id').text(),
+                email: $('#comment-email').val(),
+                uname: $('#comment-uname').val(),
+                content: $('#comment-content').text()
+            }, function(data, status) {
+                console.log(data);
+                if (data.result == "success") {
+                    alert("评论成功！");
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+
+            });
+        });
+    });
 </script>
 {% endblock %}
