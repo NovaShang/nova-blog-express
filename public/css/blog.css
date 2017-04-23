@@ -167,6 +167,11 @@ small {
     margin-top: 20px;
 }
 
+.blue-text{
+    color: #0275d8;
+    font-weight: bold;
+}
+
 @media (max-width:576px) {
     body {
         padding-top: 117px;
@@ -274,6 +279,31 @@ small {
     color: #0275d8;
 }
 
+/*分类*/
+.category{
+    border-left: 4px solid #0275d8;
+    display: flex;
+    align-items: center;
+    margin: 10px;
+    margin-left: 0px;
+    padding: 5px;
+    transition:all 0.2s;
+}
+.category:hover{
+    background-color: #FFF;
+}
+.category>.title{
+    flex-grow: 1;
+    color: #333;
+}
+.category>.count{
+    background-color: #999;
+    border-radius: 3px;
+    color: white;
+    padding: 0px 10px;
+    font-weight: bold;
+    font-size: 0.8em;
+}
 
 /*文本框*/
 
@@ -303,14 +333,6 @@ small {
 
 .textarea {
     margin: 5px 0px;
-}
-
-.textarea>.lable {
-    color: #666;
-    font-size: 0.8em
-}
-
-.textarea {
     background-color: transparent;
     width: 100%;
     resize: none;
@@ -318,6 +340,7 @@ small {
     border: 1px solid #999;
     display: block;
     transition: all 0.2s;
+    border-radius: 0px;
 }
 
 .textarea:focus {
@@ -401,6 +424,8 @@ small {
     color: #fff;
 }
 
+
+
 @media (max-width:768px) {
     .navbar-text {
         display: none;
@@ -427,8 +452,13 @@ small {
 .card {
     background-color: #FFF;
     padding: 0px;
-    box-shadow: 0px 1px 5px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.2);
     margin-bottom: 10px;
+    transition: all 0.2s;
+}
+
+a+.card-content:hover{
+    background-color: #EEE;
 }
 
 .card-mask {
@@ -449,7 +479,12 @@ small {
 .card-content {
     padding: 10px 20px;
     width: 100%;
-    border-top: 1px solid #CCC
+    border-top: 1px solid #CCC;
+    color: #333;
+    display: block;
+        transition: all 0.2s;
+
+
 }
 
 .card-content:first-child {
@@ -467,14 +502,20 @@ small {
     border-top: 1px solid #CCC;
 }
 
+.card-content>.thumb{
+    float: right;
+    height: 100%;
+    
+}
+
 .card-content-cell {
     border: none;
     border-left: 1px solid #CCC;
     flex-grow: 1;
     padding: 10px;
-    color: #333;
     text-align: center;
     transition: all 0.2s;
+    line-height: 2.2;
     background-color: transparent;
 }
 
@@ -593,30 +634,6 @@ footer {
     text-align: right;
 }
 
-.article-card-header-index {
-    padding-top: 20px;
-    padding-bottom: 10px;
-    padding-left: 20px;
-}
-
-.article-card-content-index {
-    padding: 5px 10px;
-}
-
-.article-title-index {
-    border-left: 4px solid white;
-    padding-left: 15px;
-}
-
-.article-title-index>h1 {
-    font-size: 30px;
-}
-
-.article-title-index>p {
-    font-size: 14px;
-    margin-bottom: 0px;
-}
-
 @media (max-width:576px) {
     .article-header {
         padding-left: 0px;
@@ -628,15 +645,14 @@ footer {
 }
 
 
-/*文章列表卡片*/
-
-.index-card {
-    margin-top: 15px;
+/*文章列表*/
+.article-list-title
+{
+    border-left: 4px solid #0275d8;
+    padding-left:8px;
+    margin-bottom: 10px;
 }
 
-.index-card-mask {
-    background-color: #EEE;
-    height: 100%;
-    width: 100%;
-    padding: 20px;
+.article-list-title>h4{
+    color: #0275d8;
 }

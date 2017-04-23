@@ -8,9 +8,9 @@ const marked = require('marked');
 const router = new Router();
 
 // 添加中间件，用于显示分类和标签列表
-router.use(async(ctx, next) => {
-    ctx.cates = await db.Category.findAll();
-    ctx.tags = await db.Tag.findAll();
+router.use(async (ctx, next) => {
+    ctx.cates = await db.Category.findAll({ include: [{ model: db.Article, attributes: ['id'] }] });
+    ctx.tags = await db.Tag.findAll({ include: [{ model: db.Article, attributes: ['id'] }] });
     await next();
 })
 
@@ -19,15 +19,14 @@ router.get('/', async ctx => {
     let page = parseInt(ctx.query.page);
     if (!page) { page = 1; }
     let result = await db.Article.findAndCountAll({
-        order: 'createdAt DESC',
+        order: 'article.createdAt DESC',
         include: [db.Category, db.Tag],
-        offset: (page - 1) * config.perpage,
-        limit: config.perpage
+        distinct: true
     });
     ctx.body = await ctx.render('blog', {
-        title: "高尚的博客",
         articles: result.rows,
-        pages: Math.ceil(result.count / config.perpage),
+        currentPage: page,
+        pages: Math.ceil((result.count - 1) / config.perpage),
         cates: ctx.cates,
         tags: ctx.tags,
         nav: "blog"
@@ -35,23 +34,25 @@ router.get('/', async ctx => {
 });
 
 // 某个标签的文章列表
-router.get('/tag/:id', async ctx => {
+router.get('/tags/:id', async ctx => {
     let page = parseInt(ctx.query.page);
     if (!page) { page = 1; }
     let tag = await db.Tag.findById(ctx.params.id);
     if (!tag) { ctx.redirect('/blog'); return; }
     let num = await tag.countArticles()
     let articles = await tag.getArticles({
-        include: [{ model: db.Tag }],
+        include: [db.Category, db.Tag],
         order: 'article.createdAt DESC',
         offset: (page - 1) * config.perpage,
-        limit: config.perpage
+        limit: config.perpage,
+        distinct: true
     });
     ctx.body = await ctx.render('blog', {
         title: tag.name,
-        sub_title: 'Tag',
+        subTitle: '标签',
         articles: articles,
-        pages: Math.ceil(num / config.perpage),
+        currentPage: page,
+        pages: Math.ceil((num - 1) / config.perpage),
         cates: ctx.cates,
         tags: ctx.tags,
         nav: "blog"
@@ -59,7 +60,7 @@ router.get('/tag/:id', async ctx => {
 });
 
 // 某个分类的文章列表
-router.get('/cate/:name', async ctx => {
+router.get('/categories/:name', async ctx => {
     let page = parseInt(ctx.query.page);
     if (!page) { page = 1; }
     let cate = await db.Category.findOne({ where: { name: ctx.params.name } });
@@ -68,13 +69,15 @@ router.get('/cate/:name', async ctx => {
         include: [db.Category, db.Tag],
         where: { categoryId: cate.id },
         offset: (page - 1) * config.perpage,
-        limit: config.perpage
+        limit: config.perpage,
+        distinct: true
     });
     ctx.body = await ctx.render('blog', {
         title: cate.title,
-        sub_title: 'Category',
+        subTitle: '类别',
         articles: result.rows,
-        pages: Math.ceil(result.count / config.perpage),
+        currentPage: page,
+        pages: Math.ceil((result.count - 1) / config.perpage),
         cates: ctx.cates,
         tags: ctx.tags,
         nav: "blog"
