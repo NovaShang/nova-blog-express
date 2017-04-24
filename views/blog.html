@@ -8,32 +8,55 @@
 {% block content %}
 <div class="row">
     <div class="col-xs-12 col-sm-8 col-md-9">
-
-        <div class="article-list">
-            {% for article in articles %}
-            <a href="/blog/articles/{{article.id}}">
-                <div class="content-card">
-                    <div class="article-card-header" style="background-image:url('{% if article.thumb %}{{article.thumb}}{% elif article.category.thumb %}{{article.category.thumb}}{% else %}http://novashang.com/static/img/home_bg.png{% endif %}')">
-                        <div class="article-card-header-mask article-card-header-index">
-                            <div class="article-title-index">
-                                <h1>{{article.title}}</h1>
-                                <p>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}} 浏览:{{article.count}}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="article-card-content-index">
-                        <div class="article-content">
-                            <p>{% for tag in article.tags %}<span class="badge badge-light">{{tag.name}}</span>{% endfor %}</p>
-                            <p class="summary">最近做的Revit二次开发项目中需要获取族的缩略图，分两种情况：获取硬盘上的RFA文件的缩略图和获取当前RVT文档中已载入族的缩略图。RevitAPI文档中没有相关信息，搜遍中文互联网，找不到现成的解决方案。最后在Autodesk的一个大神的技术博客上找到了点思路，自己尝试了一下最后写出代码。分享下。</p>
-                        </div>
-                    </div>
+        <div class="card">
+            {% if title %}
+            <div class="card-header">
+                <div class="card-mask">
+                    <h3>{{subTitle}}：{{title}}</h3>
                 </div>
+            </div>
+            {% endif %}
+            {% for article in articles %}
+            <a class="card-content" href="/blog/articles/{{article.id}}">
+                <div class="article-list-title">
+                    <h4>{{article.title}}</h4>
+                    <span>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}} 浏览:{{article.count}}</span>
+                    <div><span class="blue-text">{{article.category.title}} </span> {% for tag in article.tags %}<span class="tag tag-light">{{tag.name}}</span>{%
+                        endfor %}</div>
+                </div>
+                <p class="summary">{{article.summary}}</p>
             </a>
             {% endfor %}
+            <div class="card-content-row">
+                {% if currentPage!=1 %}
+                <a href="/blog/?page={{currentPage-1}}" class="card-content-cell article-pre">
+                    <img src="/svg/pre.svg" alt="">
+                    <span class="hidden-mobile">上一页</span>
+                </a> {% endif %}
+                <div class="card-content-cell">
+                    第<span class="blue-text">{{currentPage}}</span>页，共<span class="blue-text">{{pages}}</span>页
+                </div>
+                 {% if currentPage!=pages %}
+                <a href="/blog/?page={{currentPage+1}}" class="card-content-cell article-next">
+                    <span class="hidden-mobile">下一页</span>
+                    <img src="/svg/next.svg" alt="">
+                </a> {% endif %}
+            </div>
+        </div>
+        <div class="paginator">
+            <a class="pre"></a>
+
+            <a class="next"></a>
         </div>
     </div>
 
     <div class="col-xs-12 col-sm-4 col-md-3">
+        <h6 class="block-title">分类</h6>
+        {% include "components/categories.html" %}
+        <h6 class="block-title">标签</h6>
+        {% include "components/tags.html" %}
+        <h6 class="block-title">推广</h6>
+        {% include "components/ad.html" %}
     </div>
 </div>
 

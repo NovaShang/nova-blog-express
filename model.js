@@ -49,6 +49,7 @@ const Trace = sequelize.define('trace', {
 
 //建立模型间的关联
 Article.belongsTo(Category);
+Category.hasMany(Article);
 Article.hasMany(BlogComment);
 Article.belongsToMany(Tag, { through: 'article2tag' });
 Tag.belongsToMany(Article, { through: 'article2tag' });

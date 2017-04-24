@@ -47,22 +47,22 @@
 <div class="row" style="margin-top:20px;">
 
     <!--评论-->
-    <div class="col-sm-8 col-xs-12">
+    <div class="col-sm-8 col-xs-12 col-md-9">
         <h5 class="block-title">评论</h5>
 
         <!--评论列表-->
-        {% for comment in article.comments %}
         <div class="card">
+        {% for comment in article.comments %}
             <div class="card-content">
                 <h5>
-                    {{comment.uname}} <small>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}}</small>
+                    <span class="blue-text">{{comment.uname}} </span><small>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}}</small>
                 </h5>
                 <p>
                     {{comment.content}}
                 </p>
             </div>
-        </div>
         {% endfor %}
+        </div>
 
         <!--发表评论-->
         <form class="card">
@@ -88,13 +88,12 @@
             </div>
             <div class="card-content-row">
                 <input type="button" class="card-content-cell card-content-cell-blue" id="submit-comment" value="发表评论">
-                </input>
             </div>
         </form>
 
 
     </div>
-    <div class="col-sm-4 col-xs-12">
+    <div class="col-sm-4 col-xs-12 col-md-3">
         <h5 class="block-title">分类</h5>
         {% include "components/categories.html" %}
         <h5 class="block-title">标签</h5>
@@ -107,14 +106,14 @@
 <script src="/js/highlight.min.js"></script>
 <script>
     hljs.initHighlightingOnLoad();
-    $(document).ready(function() {
-        $('#submit-comment').click(function() {
+    $(document).ready(function () {
+        $('#submit-comment').click(function () {
             $.post('/api/comments', {
                 articleId: $('#article-id').text(),
                 email: $('#comment-email').val(),
                 uname: $('#comment-uname').val(),
                 content: $('#comment-content').text()
-            }, function(data, status) {
+            }, function (data, status) {
                 console.log(data);
                 if (data.result == "success") {
                     alert("评论成功！");
@@ -126,5 +125,6 @@
             });
         });
     });
+
 </script>
 {% endblock %}
