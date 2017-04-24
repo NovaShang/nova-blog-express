@@ -19,6 +19,5 @@ if (process.argv[2] == 'runserver') {
     app.listen(80);
 
 } else {
-    // Run server
     app.listen(8000);
 }

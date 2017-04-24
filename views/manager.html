@@ -1,100 +1,72 @@
-{% extends "base.html" %}
-<!--标题-->
-{% block title %}Publish New Article{% endblock %}
-<!--引用-->
-{% block head %}
-<script src="/js/vue.js"></script>
-<script src="/js/vue-resource.js"></script>
-<script src="/js/marked.js"></script>
-<script src="/js/hightlight.js"></script>
-<script src="/js/lodash.js"></script>
-{% endblock %}
-<!--正文-->
-{% block content %}
+<!DOCTYPE HTML>
+<html lang="zh-cn">
 
-<!--脚本-->
-<script>
-    var app = new Vue({
-        delimiters: ['${', '}'],
-        el: '#blog-editor',
-        data: {
-            title: '',
-            summary: '',
-            currentCate: 'default',
-            mdSrc: '',
-            newtag: '',
-            showTagPanel: false,
-            showCatePanel: false,
-            tags: [],
-            currentTags: [],
-            cates: [],
-            newCateName: '',
-            newCateTitle: ''
-        },
-        computed: {
-            mdCompiled: function() {
-                return marked(this.mdSrc, {
-                    sanitize: true
-                });
-            }
-        },
-        methods: {
-            update: _.debounce(function(e) {
-                this.mdSrc = e.target.value;
-            }, 300),
-            publish: function() {
-                $.post('/api/articles', {
-                    title: this.title,
-                    cate: this.currentCate,
-                    tags: this.currentTags,
-                    summary: this.summary,
-                    content: this.mdSrc
-                }, function(data) {
-                    if (data.result == "success ") {
-                        window.location.href = data.url;
-                    } else {
-                        alert(data.message);
-                    }
-                });
-            },
-            addNewTag: function() {
-                this.currentTags.push(this.newtag);
-                $.post("/api/tags ", {
-                    name: this.newtag
-                }, function(data) {
-                    if (data.result != "success ") {
-                        alert(data.message);
-                    }
-                });
-                this.newtag = '';
-            },
-            addNewCate: function() {
-                $.post("/api/categories ", {
-                    name: this.newCateName,
-                    title: this.newCateTitle
-                }, function(data) {
-                    if (data.result != "success ") {
-                        alert(data.message);
-                    } else {
-                        $.get("/api/categories ", function(data) {
-                            app.cates = data;
-                        })
-                    }
-                });
-                this.newCateName = '';
-                this.newCateTitle = '';
-            }
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/bootstrap-vue.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" /> {% block head %} {% endblock %}
+    <title>&lt;NOVA&gt;</title>
+</head>
+
+<body>
+    <div id="app">
+        <!--导航栏-->
+        <b-navbar toggleable type="inverse" variant="inverse">
+            <b-nav-toggle target="nav_collapse"></b-nav-toggle>
+            <!--Logo-->
+            <b-link class="navbar-brand" to="#">
+                <span>N O V A</span>
+            </b-link>
+
+            <b-collapse is-nav id="nav_collapse">
+                <b-nav is-nav-bar>
+                    <b-nav-item>主页</b-nav-item>
+                    <b-nav-item>博客</b-nav-item>
+                    <b-nav-item>作品集</b-nav-item>
+                    <b-nav-item>关于我</b-nav-item>
+
+                </b-nav>
+
+                <b-nav is-nav-bar class="ml-auto">
+
+                    <!-- Navbar dropdowns -->
+                    <b-nav-item-dropdown text="Lang" right-alignment>
+                        <b-dropdown-item to="#">EN</b-dropdown-item>
+                        <b-dropdown-item to="#">ES</b-dropdown-item>
+                        <b-dropdown-item to="#">RU</b-dropdown-item>
+                        <b-dropdown-item to="#">FA</b-dropdown-item>
+                    </b-nav-item-dropdown>
+
+                    <b-nav-item-dropdown right-alignment>
+
+                        <!-- Using text slot -->
+                        <template slot="text">
+            <span style="font-weight: bold;">User</span>
+          </template>
+
+                        <b-dropdown-item to="#">Profile</b-dropdown-item>
+                        <b-dropdown-item to="#">Signout</b-dropdown-item>
+                    </b-nav-item-dropdown>
+
+                </b-nav>
+            </b-collapse>
+        </b-navbar>
+
+    </div>
 
 
-        }
-    });
-    $.get("/api/tags ", function(data) {
-        app.tags = data.map(x => x.name);
-    });
-    $.get("/api/categories ", function(data) {
-        app.cates = data;
-    })
-    document.getElementById("markdown-editor ").style.height = window.innerHeight - 150 + "px ";
-</script>
 
-{% endblock %}
+
+    <script src="/js/vue.js"></script>
+    <script src="/js/vue-resource.js"></script>
+    <script src="/js/marked.js"></script>
+    <script src="/js/highlight.min.js"></script>
+    <script src="/js/polyfill.min.js"></script>
+    <script src="/js/tether.min.js"></script>
+    <script src="/js/bootstrap-vue.js"></script>
+    <script src="/js/manager.js"></script>
+
+</body>

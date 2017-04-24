@@ -48,14 +48,8 @@ router.get('/', async ctx => {
     });
 })
 
-// Blog editor
-router.get('/publish', async ctx => {
-    ctx.body = await ctx.render('editor');
-});
-
-
 // Blog Manager
-router.get('/manage', async ctx => {
+router.get('/admin', async ctx => {
     ctx.body = await ctx.render('manager')
 
 });
