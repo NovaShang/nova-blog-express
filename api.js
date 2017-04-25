@@ -1,8 +1,28 @@
 const Router = require("koa-router");
 const bodyparser = require('koa-bodyparser');
+const config = require('./config')
 const db = require('./model')
 const router = new Router();
+const uuid = require('uuid');
+const crypto = require('crypto');
 router.use(bodyparser());
+
+const token = "";
+
+// 身份验证
+router.post('/auth', async ctx => {
+    if (!ctx.request.body.password) {
+        ctx.body = { result: 'failed', message: 'No Password' };
+        return;
+    }
+    if (crypto.createHmac('sha256', config.adminKey).update(ctx.request.body.password).digest('hex') == config.adminPassword) {
+        token = uuid.v1().replace(/-/g, '');
+        ctx.body = { result: 'success', token: token }
+    } else {
+        ctx.body = { result: 'failed', message: 'Generate token failed' };
+        return;
+    }
+});
 
 // 获取文章
 router.get('/articles', async ctx => {

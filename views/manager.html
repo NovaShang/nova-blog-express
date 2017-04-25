@@ -18,7 +18,7 @@
             <b-nav-toggle target="nav_collapse"></b-nav-toggle>
             <!--Logo-->
             <b-link class="navbar-brand" to="#">
-                <span>N O V A</span>
+                <span>&lt; N O V A &gt;</span>
             </b-link>
 
             <b-collapse is-nav id="nav_collapse">
@@ -27,33 +27,39 @@
                     <b-nav-item>博客</b-nav-item>
                     <b-nav-item>作品集</b-nav-item>
                     <b-nav-item>关于我</b-nav-item>
-
+                    <b-nav-item active>后台</b-nav-item>
                 </b-nav>
-
                 <b-nav is-nav-bar class="ml-auto">
-
-                    <!-- Navbar dropdowns -->
-                    <b-nav-item-dropdown text="Lang" right-alignment>
-                        <b-dropdown-item to="#">EN</b-dropdown-item>
-                        <b-dropdown-item to="#">ES</b-dropdown-item>
-                        <b-dropdown-item to="#">RU</b-dropdown-item>
-                        <b-dropdown-item to="#">FA</b-dropdown-item>
-                    </b-nav-item-dropdown>
-
-                    <b-nav-item-dropdown right-alignment>
-
-                        <!-- Using text slot -->
-                        <template slot="text">
-            <span style="font-weight: bold;">User</span>
-          </template>
-
-                        <b-dropdown-item to="#">Profile</b-dropdown-item>
-                        <b-dropdown-item to="#">Signout</b-dropdown-item>
-                    </b-nav-item-dropdown>
-
+                    <b-nav-item right-alignment>登出</b-nav-item>
                 </b-nav>
             </b-collapse>
         </b-navbar>
+        <b-card no-block>
+            <b-tabs card>
+                <b-tab :title="`文章列表`">
+                    <b-btn size="sm" variant="danger" class="float-right" @click="()=>closeTab(i)">Close tab
+                    </b-btn>
+                </b-tab>
+                <!-- Render Tabs -->
+
+                <b-tab :title="`Tab ${i}`" v-for="i in tabs" :key="i">
+                    Tab Contents ${i}
+                    <b-btn size="sm" variant="danger" class="float-right" @click="()=>closeTab(i)">Close tab
+                    </b-btn>
+                </b-tab>
+
+                <!-- Newtab Button (Using tabs slot) -->
+                <b-nav-item slot="tabs" @click.prevent="newTab" href="#">
+                    +
+                </b-nav-item>
+
+                <!-- Render this if no tabs -->
+                <div slot="empty" class="text-center text-muted">
+                    There are no open tabs
+                    <br> Open a new tab using + button.
+                </div>
+            </b-tabs>
+        </b-card>
 
     </div>
 
