@@ -1,13 +1,12 @@
 const Router = require("koa-router");
-const bodyparser = require('koa-bodyparser');
 const config = require('./config')
 const db = require('./model')
 const router = new Router();
 const uuid = require('uuid');
 const crypto = require('crypto');
-router.use(bodyparser());
 
-const token = "";
+
+global.token = "";
 
 // 身份验证
 router.post('/auth', async ctx => {
@@ -16,10 +15,10 @@ router.post('/auth', async ctx => {
         return;
     }
     if (crypto.createHmac('sha256', config.adminKey).update(ctx.request.body.password).digest('hex') == config.adminPassword) {
-        token = uuid.v1().replace(/-/g, '');
-        ctx.body = { result: 'success', token: token }
+        global.token = uuid.v1().replace(/-/g, '');
+        ctx.body = { result: 'success', token: global.token }
     } else {
-        ctx.body = { result: 'failed', message: 'Generate token failed' };
+        ctx.body = { result: 'failed', message: 'Invalid Password' };
         return;
     }
 });
@@ -31,6 +30,10 @@ router.get('/articles', async ctx => {
 
 // 添加文章
 router.post('/articles', async ctx => {
+    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
+        ctx.body = { result: 'failed', message: 'Invalid Token' };
+        return;
+    }
     if (!ctx.request.body.tags) { ctx.body = { result: 'failed', message: 'No Tags' }; return; }
     var tags = (await db.Tag.findAll()).filter(x => ctx.request.body.tags.some(y => y.name));
     var cate = await db.Category.findOne({ where: { name: ctx.request.body.cate } });
@@ -47,6 +50,10 @@ router.post('/articles', async ctx => {
 
 // 修改文章
 router.put('/articles', async ctx => {
+    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
+        ctx.body = { result: 'failed', message: 'Invalid Token' };
+        return;
+    }
     var article = await db.Article.findOne({
         where: { id: ctx.request.body.id }
     });
@@ -60,6 +67,10 @@ router.put('/articles', async ctx => {
 
 // 删除文章
 router.delete('/articles', async ctx => {
+    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
+        ctx.body = { result: 'failed', message: 'Invalid Token' };
+        return;
+    }
     var article = await db.Article.findOne({ where: { id: ctx.request.body.id } });
     if (!article) { ctx.body = { result: 'failed', message: 'Article Not Found!' }; return; }
     await article.remove();
@@ -74,6 +85,10 @@ router.get('/tags', async ctx => {
 
 // 创建新标签
 router.post('/tags', async ctx => {
+    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
+        ctx.body = { result: 'failed', message: 'Invalid Token' };
+        return;
+    }
     if (!ctx.request.body.name) { ctx.body = { result: 'failed', message: 'Invalid tag name' }; return; }
     let tag = await db.Tag.create({
         name: ctx.request.body.name,
@@ -83,6 +98,10 @@ router.post('/tags', async ctx => {
 
 // 修改标签
 router.put('/tags', async ctx => {
+    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
+        ctx.body = { result: 'failed', message: 'Invalid Token' };
+        return;
+    }
     let tag = db.Tag.findOne({ where: { id: ctx.request.body.id } });
     if (!tag) { ctx.body = { result: 'failed', message: 'Tag Not Found!' }; return; }
     tag.name = ctx.request.body.name;
@@ -92,6 +111,10 @@ router.put('/tags', async ctx => {
 
 // 删除标签
 router.delete('api/tags', async ctx => {
+    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
+        ctx.body = { result: 'failed', message: 'Invalid Token' };
+        return;
+    }
     let tag = db.Tag.findOne({ where: { id: ctx.request.body.id } });
     if (!tag) { ctx.body = { result: 'failed', message: 'Tag Not Found!' }; return; }
     await tag.remove();
@@ -105,6 +128,10 @@ router.get('/categories', async ctx => {
 
 // 添加新分类
 router.post('/categories', async ctx => {
+    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
+        ctx.body = { result: 'failed', message: 'Invalid Token' };
+        return;
+    }
     if (!(ctx.request.body.name && ctx.request.body.title)) { ctx.body = { result: 'failed', message: 'Invalid category' }; return; }
     let cate = await db.Category.create({
         name: ctx.request.body.name,
@@ -115,6 +142,10 @@ router.post('/categories', async ctx => {
 
 // 修改现有分类
 router.put('/categories', async ctx => {
+    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
+        ctx.body = { result: 'failed', message: 'Invalid Token' };
+        return;
+    }
     let category = await db.Category.findOne({ where: { id: ctx.request.body.id } });
     if (!category) { ctx.body = { result: 'failed', message: 'Category Not Found!' }; return; }
     category.name = ctx.request.body.name;
@@ -125,6 +156,10 @@ router.put('/categories', async ctx => {
 
 // 删除分类
 router.delete('/categories', async ctx => {
+    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
+        ctx.body = { result: 'failed', message: 'Invalid Token' };
+        return;
+    }
     let category = await db.Category.findOne({ where: { id: ctx.request.body.id } });
     if (!category) { ctx.body = { result: 'failed', message: 'Category Not Found!' }; return; }
     await category.remove()

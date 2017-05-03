@@ -29,7 +29,7 @@ body {
 }
 
 a {
-    color: #0275d8;
+    color: #007acc;
     text-decoration: none !important;
     background-color: transparent;
 }
@@ -167,8 +167,8 @@ small {
     margin-top: 20px;
 }
 
-.blue-text{
-    color: #0275d8;
+.blue-text {
+    color: #007acc;
     font-weight: bold;
 }
 
@@ -265,38 +265,43 @@ small {
 .tag-pill>span {
     margin: 0px;
     padding: .25em .4em;
-    border: 1px solid #0275d8;
+    border: 1px solid #007acc;
 }
 
 .tag-pill>span:first-child {
     border-radius: 0.25rem 0rem 0rem 0.25rem;
     color: white;
-    background-color: #0275d8;
+    background-color: #007acc;
 }
 
 .tag-pill>span:last-child {
     border-radius: 0rem 0.25rem 0.25rem 0rem;
-    color: #0275d8;
+    color: #007acc;
 }
 
+
 /*分类*/
-.category{
-    border-left: 4px solid #0275d8;
+
+.category {
+    border-left: 4px solid #007acc;
     display: flex;
     align-items: center;
     margin: 10px;
     margin-left: 0px;
     padding: 5px;
-    transition:all 0.2s;
+    transition: all 0.2s;
 }
-.category:hover{
+
+.category:hover {
     background-color: #FFF;
 }
-.category>.title{
+
+.category>.title {
     flex-grow: 1;
     color: #333;
 }
-.category>.count{
+
+.category>.count {
     background-color: #999;
     border-radius: 3px;
     color: white;
@@ -304,6 +309,7 @@ small {
     font-weight: bold;
     font-size: 0.8em;
 }
+
 
 /*文本框*/
 
@@ -316,7 +322,7 @@ small {
 }
 
 .textbox:hover {
-    border-bottom: 3px solid #0275d8;
+    border-bottom: 3px solid #007acc;
 }
 
 .textbox>.lable {
@@ -344,7 +350,7 @@ small {
 }
 
 .textarea:focus {
-    border: 1px solid #0275d8;
+    border: 1px solid #007acc;
 }
 
 
@@ -424,8 +430,6 @@ small {
     color: #fff;
 }
 
-
-
 @media (max-width:768px) {
     .navbar-text {
         display: none;
@@ -452,13 +456,9 @@ small {
 .card {
     background-color: #FFF;
     padding: 0px;
-    box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
     transition: all 0.2s;
-}
-
-a+.card-content:hover{
-    background-color: #EEE;
 }
 
 .card-mask {
@@ -477,14 +477,12 @@ a+.card-content:hover{
 }
 
 .card-content {
-    padding: 10px 20px;
+    padding: 20px;
     width: 100%;
     border-top: 1px solid #CCC;
     color: #333;
     display: block;
-        transition: all 0.2s;
-
-
+    transition: all 0.2s;
 }
 
 .card-content:first-child {
@@ -502,10 +500,9 @@ a+.card-content:hover{
     border-top: 1px solid #CCC;
 }
 
-.card-content>.thumb{
+.card-content>.thumb {
     float: right;
     height: 100%;
-    
 }
 
 .card-content-cell {
@@ -528,7 +525,7 @@ a+.card-content:hover{
 }
 
 .card-content-cell-blue:hover {
-    background-color: #0275d8;
+    background-color: #007acc;
     color: white;
 }
 
@@ -646,13 +643,13 @@ footer {
 
 
 /*文章列表*/
-.article-list-title
-{
-    border-left: 4px solid #0275d8;
-    padding-left:8px;
+
+.article-list-title {
+    border-left: 4px solid #007acc;
+    padding-left: 8px;
     margin-bottom: 10px;
 }
 
-.article-list-title>h4{
-    color: #0275d8;
+.article-list-title>h4 {
+    color: #007acc;
 }

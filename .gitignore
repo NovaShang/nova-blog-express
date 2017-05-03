@@ -121,3 +121,5 @@ typings/
 # vscode
 
 .vscode
+
+/config.js

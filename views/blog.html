@@ -3,7 +3,7 @@
 {% block metadata %}
 <meta name="description" content="blog"> {% endblock %}
 <!--Title-->
-{% block title %}{{title}} {{sub_title}} Koa Tiny Blog{% endblock %}
+{% block title %}{{title}} {{sub_title}}&lt;Nova&gt; 高尚的博客{% endblock %}
 <!--Content-->
 {% block content %}
 <div class="row">
@@ -15,14 +15,12 @@
                     <h3>{{subTitle}}：{{title}}</h3>
                 </div>
             </div>
-            {% endif %}
-            {% for article in articles %}
+            {% endif %} {% for article in articles %}
             <a class="card-content" href="/blog/articles/{{article.id}}">
                 <div class="article-list-title">
                     <h4>{{article.title}}</h4>
                     <span>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}} 浏览:{{article.count}}</span>
-                    <div><span class="blue-text">{{article.category.title}} </span> {% for tag in article.tags %}<span class="tag tag-light">{{tag.name}}</span>{%
-                        endfor %}</div>
+                    <div><span class="blue-text">{{article.category.title}} </span> {% for tag in article.tags %}<span class="tag tag-light">{{tag.name}}</span>{% endfor %}</div>
                 </div>
                 <p class="summary">{{article.summary}}</p>
             </a>
@@ -36,7 +34,7 @@
                 <div class="card-content-cell">
                     第<span class="blue-text">{{currentPage}}</span>页，共<span class="blue-text">{{pages}}</span>页
                 </div>
-                 {% if currentPage!=pages %}
+                {% if currentPage!=pages %}
                 <a href="/blog/?page={{currentPage+1}}" class="card-content-cell article-next">
                     <span class="hidden-mobile">下一页</span>
                     <img src="/svg/next.svg" alt="">
