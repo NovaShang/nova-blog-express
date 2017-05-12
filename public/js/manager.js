@@ -7,7 +7,8 @@ const app = new Vue({
         token: '',
         showLogin: true,
         articles: [],
-        currentFunction: ''
+        currentFunction: '',
+        showSidebar: true
     },
     created: function() {
         let savedPassword = window.localStorage.getItem('password')
@@ -43,14 +44,14 @@ const app = new Vue({
 
 
         },
+        toggleSidebar: function() {
+            this.showSidebar = !this.showSidebar;
+        }
 
 
     }
 });
 
-
-
-}
 
 const resArticle = Vue.resource('/api/articles{/id}');
 const resTag = Vue.resource('/api/tags{/id}');

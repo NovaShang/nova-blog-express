@@ -6,8 +6,76 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
     <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" /> {% block head %} {% endblock %}
     <title>&lt;NOVA&gt;</title>
+    <style>
+        .addbutton-thin {
+            padding: 5px 10px;
+            margin: 20px 0px;
+        }
+        
+        .addbutton-normal {
+            padding: 5px 30px;
+            margin: 20px 0px;
+        }
+        
+        .modulelist-normal {
+            height: 100%;
+            background-color: #161616;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center
+        }
+        
+        .modulelist-thin {
+            height: 100%;
+            background-color: #161616;
+            width: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center
+        }
+        
+        .modulelist-item {
+            background-color: transparent;
+            border: none;
+            border-top: 1px solid #333333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            width: 100%;
+        }
+        
+        .modulelist-item:hover {
+            background-color: #333333;
+        }
+        
+        .modulelist-item>.text {
+            color: #BBBBBB;
+            margin-left: 20px;
+        }
+        
+        .modulelist-item>.icon {
+            font-size: 24px;
+            color: #DDDDDD;
+        }
+        
+        .modulelist-item+.active {
+            background-color: #333333
+        }
+        
+        .hide-sidebar-button {
+            background-color: #333333;
+            border: none;
+        }
+        
+        .hide-sidebar-button:hover {
+            background-color: #666666;
+        }
+    </style>
 </head>
 
 <body style="height:100%">
@@ -35,19 +103,27 @@
         <!--主界面-->
         <div class="main" style="height:100%;display:flex">
             <!--模块列表-->
-            <div>
-                <ul>
-                    <li>发布新文章</li>
-                    <li>仪表板</li>
-                    <li>文章</li>
-                    <li>作品</li>
-                    <li>评论</li>
-                    <li>文件</li>
-                    <li>回收站</li>
-                </ul>
+            <div v-bind:class="{'modulelist-normal':showSidebar,'modulelist-thin':!showSidebar}">
+                <img src="/img/NewLogo512.png" style="height:128px;width:128px;margin-top:40px;" v-show="showSidebar">
+                <button type="button" class="btn btn-large btn-primary" v-bind:class="{'addbutton-normal':showSidebar,'addbutton-thin':!showSidebar}"><span class="fa fa-plus"></span><span v-show="showSidebar"> 新建笔记</span></button>
+                <div style="flex-grow:1;width:100%">
+                    <button class="modulelist-item"><span class="fa fa-sticky-note-o icon"></span><span class="text" v-show="showSidebar">笔记管理</span></button>
+                    <button class="modulelist-item"><span class="fa fa-file-text-o icon"></span><span class="text" v-show="showSidebar">文章管理</span></button>
+                    <button class="modulelist-item"><span class="fa fa-flag-checkered icon"></span><span class="text" v-show="showSidebar">作品管理</span></button>
+                    <button class="modulelist-item"><span class="fa fa-commenting-o icon"></span><span class="text" v-show="showSidebar">评论管理</span></button>
+                </div>
+                <a href="/" style="margin:10px;" v-show="showSidebar">跳转到前台</a>
+            </div>
+            <!--内容列表-->
+            <div style="height:100%;background-color:#333333;width:400px;display:flex;flex-direction:column;align-items:center" v-show="showSidebar">
+                <!--文章管理-->
+                
 
             </div>
-
+            <!--隐藏按钮-->
+            <button class="hide-sidebar-button" style="height:100%;width:10px;display:flex;flex-direction:row;align-items:center;justify-content:center" @click="toggleSidebar">
+                <span class="fa" v-bind:class="{'fa-angle-left':showSidebar,'fa-angle-right':!showSidebar}"></span>
+            </button>
             <!--标签页-->
             <div style="flex-grow:1;flex-direction:column">
                 <!--标签页列表-->
