@@ -187,4 +187,10 @@ router.post('/comments', async ctx => {
     ctx.body = { result: 'success', comment: comment };
 });
 
+router.get('/works',async ctx=>{
+    
+
+});
+
+
 module.exports = router;

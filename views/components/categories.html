@@ -1,5 +1,5 @@
 {% for cate in cates %}
-<a href="/blog/categories/{{cate.name}}" class="category">
+<a href="/categories/{{cate.name}}" class="category">
     <span class="title">{{cate.title}}</span>
     <span class="count">{{cate.articles.length}}</span>
 </a> {% endfor %}

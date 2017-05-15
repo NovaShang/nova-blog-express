@@ -6,97 +6,34 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
     <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/manager.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="/css/font-awesome.min.css" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" /> {% block head %} {% endblock %}
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <title>&lt;NOVA&gt;</title>
-    <style>
-        .addbutton-thin {
-            padding: 5px 10px;
-            margin: 20px 0px;
-        }
-        
-        .addbutton-normal {
-            padding: 5px 30px;
-            margin: 20px 0px;
-        }
-        
-        .modulelist-normal {
-            height: 100%;
-            background-color: #161616;
-            width: 200px;
-            display: flex;
-            flex-direction: column;
-            align-items: center
-        }
-        
-        .modulelist-thin {
-            height: 100%;
-            background-color: #161616;
-            width: 50px;
-            display: flex;
-            flex-direction: column;
-            align-items: center
-        }
-        
-        .modulelist-item {
-            background-color: transparent;
-            border: none;
-            border-top: 1px solid #333333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 60px;
-            width: 100%;
-        }
-        
-        .modulelist-item:hover {
-            background-color: #333333;
-        }
-        
-        .modulelist-item>.text {
-            color: #BBBBBB;
-            margin-left: 20px;
-        }
-        
-        .modulelist-item>.icon {
-            font-size: 24px;
-            color: #DDDDDD;
-        }
-        
-        .modulelist-item+.active {
-            background-color: #333333
-        }
-        
-        .hide-sidebar-button {
-            background-color: #333333;
-            border: none;
-        }
-        
-        .hide-sidebar-button:hover {
-            background-color: #666666;
-        }
-    </style>
 </head>
 
 <body style="height:100%">
     <div id="app" style="height:100%">
-        <!--登陆对话框-->
-        <div class="modal-dialog" v-show="showLogin">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">
-                        登陆
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <label for="password">密码</label>
-                    <input type="password" class="form-control" id="password" placeholder="请输入密码" v-model="password" value="">
-                    <div class="checkbox">
-                        <label><input type="checkbox"  v-model="savePassword">记住密码</label>
+        <!--对话框-->
+        <div style="position:absolute;height:100%;width:100%;top:0;left:0" v-show="showLogin">
+            <!--登陆对话框-->
+            <div class="modal-dialog" v-show="showLogin">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">
+                            登陆
+                        </h4>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" @click="login">登陆</button>
+                    <div class="modal-body">
+                        <label for="password">密码</label>
+                        <input type="password" class="form-control" id="password" placeholder="请输入密码" v-model="password" value="">
+                        <div class="checkbox">
+                            <label><input type="checkbox"  v-model="savePassword">记住密码</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @click="login">登陆</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -105,30 +42,61 @@
             <!--模块列表-->
             <div v-bind:class="{'modulelist-normal':showSidebar,'modulelist-thin':!showSidebar}">
                 <img src="/img/NewLogo512.png" style="height:128px;width:128px;margin-top:40px;" v-show="showSidebar">
-                <button type="button" class="btn btn-large btn-primary" v-bind:class="{'addbutton-normal':showSidebar,'addbutton-thin':!showSidebar}"><span class="fa fa-plus"></span><span v-show="showSidebar"> 新建笔记</span></button>
+                <button type="button" v-bind:class="['btn','btn-large','btn-primary',{'addbutton-normal':showSidebar,'addbutton-thin':!showSidebar}]"><span class="fa fa-plus"></span><span v-show="showSidebar"> 新建笔记</span></button>
                 <div style="flex-grow:1;width:100%">
-                    <button class="modulelist-item"><span class="fa fa-sticky-note-o icon"></span><span class="text" v-show="showSidebar">笔记管理</span></button>
-                    <button class="modulelist-item"><span class="fa fa-file-text-o icon"></span><span class="text" v-show="showSidebar">文章管理</span></button>
-                    <button class="modulelist-item"><span class="fa fa-flag-checkered icon"></span><span class="text" v-show="showSidebar">作品管理</span></button>
-                    <button class="modulelist-item"><span class="fa fa-commenting-o icon"></span><span class="text" v-show="showSidebar">评论管理</span></button>
+                    <button v-bind:class="{'modulelist-item':true,'active':currentModule=='note'}" @click="showSidebar=true;currentModule='note'"><span class="fa fa-sticky-note-o icon"></span><span class="text" v-show="showSidebar">笔记管理</span></button>
+                    <button v-bind:class="{'modulelist-item':true,'active':currentModule=='article'}" @click="showSidebar=true;currentModule='article'"><span class="fa fa-file-text-o icon"></span><span class="text" v-show="showSidebar">文章管理</span></button>
+                    <button v-bind:class="{'modulelist-item':true,'active':currentModule=='work'}" @click="showSidebar=true;currentModule='work'"><span class="fa fa-flag-checkered icon"></span><span class="text" v-show="showSidebar">作品管理</span></button>
+                    <button v-bind:class="{'modulelist-item':true,'active':currentModule=='comment'}" @click="showSidebar=true;currentModule='comment'"><span class="fa fa-commenting-o icon"></span><span class="text" v-show="showSidebar">评论管理</span></button>
                 </div>
                 <a href="/" style="margin:10px;" v-show="showSidebar">跳转到前台</a>
             </div>
+            <!--隐藏按钮-->
+            <button class="hide-sidebar-button" style="height:100%;width:10px;display:flex;flex-direction:row;align-items:center;justify-content:center"
+                @click="showSidebar=false" v-show="showSidebar">
+                <span class="fa fa-angle-left"></span>
+            </button>
             <!--内容列表-->
-            <div style="height:100%;background-color:#333333;width:400px;display:flex;flex-direction:column;align-items:center" v-show="showSidebar">
+            <div style="height:100%;background-color:#222222;width:400px;display:flex;flex-direction:column;align-items:center" v-show="showSidebar">
+                <!--笔记管理-->
+                <div v-show="currentModule=='note'">
+                    <div>
+
+
+
+                    </div>
+                </div>
                 <!--文章管理-->
-                
+                <div v-show="currentModule=='article'" class="contentlist">
+                    <div v-for="article in articles" class="contentlist-item">
+                        <div class="title">
+                            ${article.title}
+                        </div>
+                        <div class="tags">
+                        </div>
+                        <div class="content">
+                            ${article.createdAt} 浏览${article.count}
+                        </div>
+                    </div>
+                </div>
+
+                <!--作品管理-->
+                <div v-show="currentModule=='work'">
+                    嘎嘎嘎
+                </div>
+
+                <!--评论管理-->
+                <div v-show="currentModule=='comment'">
+                    擦擦擦
+                </div>
+
+
 
             </div>
-            <!--隐藏按钮-->
-            <button class="hide-sidebar-button" style="height:100%;width:10px;display:flex;flex-direction:row;align-items:center;justify-content:center" @click="toggleSidebar">
-                <span class="fa" v-bind:class="{'fa-angle-left':showSidebar,'fa-angle-right':!showSidebar}"></span>
-            </button>
             <!--标签页-->
             <div style="flex-grow:1;flex-direction:column">
                 <!--标签页列表-->
                 <div>
-                    <div v-for="article in openedArticles">${article.title}</div>
                 </div>
                 <!--标签页正文-->
                 <div>

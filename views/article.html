@@ -30,12 +30,12 @@
     <!--导航到其他文章-->
     <div class="card-content-row">
         {% if pre %}
-        <a href="/blog/articles/{{pre.id}}" class="card-content-cell article-pre">
+        <a href="/articles/{{pre.id}}" class="card-content-cell article-pre">
             <img src="/svg/pre.svg" alt="">
             <span class="hidden-mobile">{{pre.title}}</span>
             <span class="show-mobile">上一篇</span>
         </a> {% endif %} {% if next %}
-        <a href="/blog/articles/{{next.id}}" class="card-content-cell article-next">
+        <a href="/articles/{{next.id}}" class="card-content-cell article-next">
             <span class="hidden-mobile">{{next.title}}</span>
             <span class="show-mobile">下一篇</span>
             <img src="/svg/next.svg" alt="">

@@ -33,19 +33,12 @@ const BlogComment = sequelize.define('comment', {
 const Work = sequelize.define('work', {
     name: Sequelize.STRING,
     summary: Sequelize.TEXT,
-    content: Sequelize.TEXT,
     giturl: Sequelize.STRING,
     projecturl: Sequelize.STRING
 });
 const Tech = sequelize.define('tech', {
     name: Sequelize.STRING,
 });
-const Trace = sequelize.define('trace', {
-    title: Sequelize.STRING,
-    url: Sequelize.STRING,
-    type: Sequelize.STRING,
-    icon: Sequelize.STRING
-})
 
 //建立模型间的关联
 Article.belongsTo(Category);
@@ -62,7 +55,6 @@ exports.Tag = Tag;
 exports.Category = Category;
 exports.Comment = BlogComment;
 exports.Work = Work;
-exports.Trace = Trace;
 exports.dbContext = sequelize;
 
 //同步数据库

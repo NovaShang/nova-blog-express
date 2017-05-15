@@ -16,7 +16,7 @@
                 </div>
             </div>
             {% endif %} {% for article in articles %}
-            <a class="card-content" href="/blog/articles/{{article.id}}">
+            <a class="card-content" href="/articles/{{article.id}}">
                 <div class="article-list-title">
                     <h4>{{article.title}}</h4>
                     <span>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}} 浏览:{{article.count}}</span>
@@ -27,7 +27,7 @@
             {% endfor %}
             <div class="card-content-row">
                 {% if currentPage!=1 %}
-                <a href="/blog/?page={{currentPage-1}}" class="card-content-cell article-pre">
+                <a href="/?page={{currentPage-1}}" class="card-content-cell article-pre">
                     <img src="/svg/pre.svg" alt="">
                     <span class="hidden-mobile">上一页</span>
                 </a> {% endif %}
@@ -35,7 +35,7 @@
                     第<span class="blue-text">{{currentPage}}</span>页，共<span class="blue-text">{{pages}}</span>页
                 </div>
                 {% if currentPage!=pages %}
-                <a href="/blog/?page={{currentPage+1}}" class="card-content-cell article-next">
+                <a href="/?page={{currentPage+1}}" class="card-content-cell article-next">
                     <span class="hidden-mobile">下一页</span>
                     <img src="/svg/next.svg" alt="">
                 </a> {% endif %}

@@ -1,16 +1,22 @@
 const app = new Vue({
+    // html 标签
     el: '#app',
+    // 定义分隔符
     delimiters: ['${', '}'],
+    // 数据
     data: {
+        // 登陆
         password: '',
         savePassword: false,
         token: '',
         showLogin: true,
+        // 
         articles: [],
         currentFunction: '',
-        showSidebar: true
+        showSidebar: true,
+        currentModule: 'article'
     },
-    created: function() {
+    created: function () {
         let savedPassword = window.localStorage.getItem('password')
         if (savedPassword) {
             this.savePassword = true;
@@ -19,7 +25,7 @@ const app = new Vue({
         }
     },
     methods: {
-        login: function() {
+        login: function () {
             this.$http.post('/api/auth', { password: this.password })
                 .then(response => {
                     if (response.body.result == 'success') {
@@ -28,27 +34,36 @@ const app = new Vue({
                         if (this.savePassword) {
                             window.localStorage.setItem('password', this.password);
                         }
+                        this.refreshArticles();
                     } else {
                         alert(response.body.message);
                     }
                 }, e => {
                     alert(e)
                 })
+                .then()
         },
-        logoff: function() {
+        logoff: function () {
             this.token = '';
             window.localStorage.removeItem('password');
             this.showLogin = true;
         },
-        addTag: function() {
+        addTag: function () {
 
 
         },
-        toggleSidebar: function() {
-            this.showSidebar = !this.showSidebar;
-        }
+        refreshArticles: function () {
+            resArticle.query().then(resp => {
+                this.articles = resp.body;
 
+            })
+        },
+        refreshWorks: function () {
+            resArticle.query().then(resp => {
+                this.articles = resp.body;
 
+            })
+        },
     }
 });
 
@@ -56,3 +71,4 @@ const app = new Vue({
 const resArticle = Vue.resource('/api/articles{/id}');
 const resTag = Vue.resource('/api/tags{/id}');
 const resCategory = Vue.resource('/api/categories{/id}');
+const resWork = Vue.resource('/api/works{/id}');

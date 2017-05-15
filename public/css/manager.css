@@ -1,18 +1,90 @@
-.modal {
-    position: fixed;
-    width: 300px;
-    left: 0;
-    right: 0;
-    margin: auto;
+.addbutton-thin {
+    padding: 5px 10px;
+    margin: 20px 0px;
 }
 
-.mask {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
+.addbutton-normal {
+    padding: 5px 30px;
+    margin: 20px 0px;
+}
+
+.modulelist-normal {
+    height: 100%;
+    background-color: #161616;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center
+}
+
+.modulelist-thin {
+    height: 100%;
+    background-color: #161616;
+    width: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center
+}
+
+.modulelist-item {
+    background-color: transparent;
+    border: none;
+    border-top: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    width: 100%;
+}
+
+.modulelist-item:hover {
+    background-color: #222222;
+}
+
+.modulelist-item>.text {
+    color: #BBBBBB;
+    margin-left: 20px;
+}
+
+.modulelist-item>.icon {
+    font-size: 24px;
+    color: #DDDDDD;
+}
+
+.modulelist-normal .active {
+    background-color: #222222
+}
+
+.hide-sidebar-button {
+    background-color: #222222;
+    border: none;
+}
+
+.hide-sidebar-button:hover {
+    background-color: #666666;
+}
+
+.contentlist{
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 10000;
+    overflow-y: auto;
+}
+
+.contentlist-item{
+    display: block;
+    width: 100%;
+    padding: 5px 10px;
+}
+
+.contentlist-item>.title{
+    color: white;
+
+}
+
+.contentlist-item>.content{
+
+}
+
+.contentlist-item:hover{
+    background-color: rgba(255, 255, 255, 0.2)
 }
