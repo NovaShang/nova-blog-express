@@ -34,10 +34,13 @@ const Work = sequelize.define('work', {
     name: Sequelize.STRING,
     summary: Sequelize.TEXT,
     giturl: Sequelize.STRING,
-    projecturl: Sequelize.STRING
+    projecturl: Sequelize.STRING,
+    version: Sequelize.STRING,
+    hidden: Sequelize.BOOLEAN,
+    content: Sequelize.TEXT,
 });
 const Tech = sequelize.define('tech', {
-    name: Sequelize.STRING,
+    name: Sequelize.STRING
 });
 
 //建立模型间的关联
@@ -55,6 +58,7 @@ exports.Tag = Tag;
 exports.Category = Category;
 exports.Comment = BlogComment;
 exports.Work = Work;
+exports.Tech = Tech;
 exports.dbContext = sequelize;
 
 //同步数据库

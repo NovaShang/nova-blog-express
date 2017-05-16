@@ -187,10 +187,72 @@ router.post('/comments', async ctx => {
     ctx.body = { result: 'success', comment: comment };
 });
 
-router.get('/works',async ctx=>{
-    
-
+// GET /api/works
+router.get('/works', async ctx => {
+    ctx.body = await db.Work.findAll({
+        where: {
+            hidden: { not: true }
+        },
+        attributes: ['id', 'name', 'summary'],
+        include: [{
+            model: db.Tech,
+            attributes: ['name']
+        }],
+        order: 'work.createdAt DESC'
+    });
 });
+
+// GET /api/works/id
+router.get('/works/:id', async ctx => {
+    ctx.body = await db.Work.findById(ctx.params.id);
+});
+
+// POST /api/works
+router.post('/works', async ctx => {
+    if (!(ctx.request.body.work && ctx.request.body.work.name && ctx.request.body.work.summary && ctx.request.body.work.content && (ctx.request.body.techs instanceof Array))) {
+        ctx.body = { result: 'failed', message: '请填写所有字段!' };
+        return;
+    };
+    let techs = await db.Tech.findAll();
+    for (element of ctx.request.body.techs) {
+        if (!techs.some(x => x.name == element)) {
+            let tech = db.Tech.create({ name: element })
+            techs.push(tech);
+        }
+    }
+    let work = await db.Work.create(ctx.request.body.work);
+    await work.setTeches(techs.filter(x => ctx.request.body.techs.some(y => x.name == y)));
+    ctx.body = { result: 'success', id: work.id };
+});
+
+// PUT /api/works/id
+router.put('/works/:id', async ctx => {
+    if (!(ctx.request.body.work && ctx.request.body.work.name && ctx.request.body.work.summary && ctx.request.body.work.content && (ctx.request.body.techs instanceof Array))) {
+        ctx.body = { result: 'failed', message: '请填写所有字段!' };
+        return;
+    };
+    let work = await db.Work.findById(ctx.params.id);
+    if (!work) {
+        ctx.body = { result: 'failed', message: '作品不存在!' };
+        return;
+    }
+    await work.update(ctx.request.body.work);
+    let techs = await db.Tech.findAll();
+    await work.setTechs(techs.filter(x => ctx.request.body.techs.some(y => x.name == y)));
+    ctx.body = { result: 'success', id: work.id };
+});
+
+// DELETE /api/works/id
+router.delete('/works/:id', async ctx => {
+    let work = await db.Work.findById(ctx.params.id);
+    if (!work) {
+        ctx.body = { result: 'failed', message: '作品不存在!' };
+        return;
+    }
+    work.hidden = true;
+    await work.save();
+    ctx.body = { result: 'success' };
+})
 
 
 module.exports = router;

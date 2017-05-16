@@ -12,11 +12,12 @@ const app = new Vue({
         showLogin: true,
         // 
         articles: [],
+        works: [],
         currentFunction: '',
         showSidebar: true,
         currentModule: 'article'
     },
-    created: function () {
+    created: function() {
         let savedPassword = window.localStorage.getItem('password')
         if (savedPassword) {
             this.savePassword = true;
@@ -25,7 +26,7 @@ const app = new Vue({
         }
     },
     methods: {
-        login: function () {
+        login: function() {
             this.$http.post('/api/auth', { password: this.password })
                 .then(response => {
                     if (response.body.result == 'success') {
@@ -35,6 +36,7 @@ const app = new Vue({
                             window.localStorage.setItem('password', this.password);
                         }
                         this.refreshArticles();
+                        this.refreshWorks();
                     } else {
                         alert(response.body.message);
                     }
@@ -43,24 +45,24 @@ const app = new Vue({
                 })
                 .then()
         },
-        logoff: function () {
+        logoff: function() {
             this.token = '';
             window.localStorage.removeItem('password');
             this.showLogin = true;
         },
-        addTag: function () {
+        addTag: function() {
 
 
         },
-        refreshArticles: function () {
+        refreshArticles: function() {
             resArticle.query().then(resp => {
                 this.articles = resp.body;
 
             })
         },
-        refreshWorks: function () {
-            resArticle.query().then(resp => {
-                this.articles = resp.body;
+        refreshWorks: function() {
+            resWork.query().then(resp => {
+                this.works = resp.body;
 
             })
         },
