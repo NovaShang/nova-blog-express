@@ -13,8 +13,13 @@ const app = new Vue({
         // 
         articles: [],
         works: [],
+
+
+        tabs: [],
+        currentTab: {},
         currentFunction: '',
         showSidebar: true,
+        showCreate: true,
         currentModule: 'article'
     },
     created: function() {
@@ -49,6 +54,18 @@ const app = new Vue({
             this.token = '';
             window.localStorage.removeItem('password');
             this.showLogin = true;
+        },
+        addTab: function() {
+            let newWorkTab = {
+                title: "Untitled",
+                rawContent: "",
+                renderedContent: "",
+                data: null,
+                type: "work",
+                sourceId: 0
+            }
+            this.tabs.push(newWorkTab);
+            this.currentTab = newWorkTab;
         },
         addTag: function() {
 
