@@ -3,55 +3,71 @@
     <nav class="navbar">
         <div class="container navbar-container">
             <a class="navbar-brand" href="/">       
-                    <img class="brand-logo" src="/svg/logo.svg" alt="<N>">
-                    <span class="brand-text">
-                         N O V A
-                    </span>               
-                    <span class="navbar-text">
-                        高尚的博客
-                    </span>
-                    <span class="navbar-text">
-                        BIM、编程和其他
-                    </span>
-                </a>
+                <img class="brand-logo" src="/svg/logo.svg" alt="<N>">
+                <span class="brand-text">
+                        N O V A
+                </span>               
 
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item {% if nav=='blog' %}active{% endif %}">
-                    <a class="nav-link" href="/">博客</a>
-                </li>
-                <li class="nav-item {% if nav=='portfolio' %}active{% endif %}">
-                    <a class="nav-link" href="/portfolio">作品集</a>
-                </li>
-                <li class="nav-item {% if nav=='about' %}active{% endif %}">
-                    <a class="nav-link" href="/about">关于我</a>
-                </li>
-            </ul>
+            </a>
+            <span class="navbar-text">
+                <span class="bold">高尚的博客</span>
+            <br/> 半路出家的建筑行业开发者
+            <br/> 分享关于BIM、编程、科技和其他
+            </span>
+            <span class="show-mobile hide-roll" style="color:white">
+                <span class="bold">高尚的博客</span>
+            </span>
+            <div class="navbar-right">
+                <div class="navbar-contract">
+                    <span style="line-height:40px;" class="hidden-mobile">联系我 :</span>
+                    <a class="header-icon">
+                        <img src="/svg/github.svg" alt="">
+                    </a>
+                    <a class="header-icon">
+                        <img src="/svg/weibo.svg" alt="">
+                    </a>
+                    <a class="header-icon">
+                        <img src="/svg/mail.svg" alt="">
+                    </a>
+                </div>
+                <ul class="navbar-nav">
+                    <li class="nav-item {% if nav=='blog' %}active{% endif %}">
+                        <a class="nav-link" href="/">博客</a>
+                    </li>
+                    <li class="nav-item {% if nav=='portfolio' %}active{% endif %}">
+                        <a class="nav-link" href="/portfolio">作品集</a>
+                    </li>
+                    <li class="nav-item {% if nav=='about' %}active{% endif %}">
+                        <a class="nav-link" href="/about">关于我</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
     <!--控制导航条随滚动调整的脚本-->
     <script>
         var status = 0;
-        $(window).scroll(function() {
-            if ($(window).scrollTop() < 60) {
+        var navbar = document.getElementsByClassName("navbar")[0];
+        var body = document.body;
+        window.addEventListener('scroll', function() {
+            var mobile = true;
+            if (window.innerWidth > 576) {
+                mobile = false;
+            }
+            if (window.scrollY < (mobile ? 138 : 74)) {
                 if (status != 1) {
                     status = 1;
-                    $(".brand-logo").stop().animate({
-                        height: "90px",
-                    }, 300, "swing", function() {
-                        status = 0;
-                    });
+                    navbar.classList.remove("fold");
+                    body.style.paddingTop = 0;
+
                 }
             } else {
                 if (status != 2) {
                     status = 2;
-                    $(".brand-logo").stop().animate({
-                        height: "0px",
-                    }, 300, "swing", function() {
-                        status = 0;
-                    });
+                    navbar.classList.add("fold");
+                    body.style.paddingTop = mobile ? "195px" : "104px";
                 }
-
             }
         });
     </script>

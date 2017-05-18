@@ -24,7 +24,6 @@ body {
     line-height: 1.5;
     color: #292b2c;
     background-color: #EEE;
-    padding-top: 100px;
     margin: 0px;
 }
 
@@ -173,9 +172,6 @@ small {
 }
 
 @media (max-width:576px) {
-    body {
-        padding-top: 117px;
-    }
     .hidden-mobile {
         display: none;
     }
@@ -359,19 +355,19 @@ small {
 .navbar {
     background-color: rgba(0, 0, 0, 0.85);
     box-shadow: 0px 1px 5px 3px rgba(0, 0, 0, 0.3);
-    position: fixed;
     top: 0px;
     right: 0px;
     left: 0px;
-    z-index: 1030;
+    z-index: 9999;
     padding: 0px;
     display: flex;
     flex-direction: column;
+    margin-bottom: 20px;
 }
 
 .navbar-container {
-    align-items: center !important;
-    display: flex !important;
+    align-items: center;
+    display: flex;
 }
 
 .navbar-brand {
@@ -399,6 +395,12 @@ small {
     font-size: 0.75em;
     margin-left: 20px;
     color: rgba(255, 255, 255, 0.5);
+    vertical-align: middle;
+    margin: 25px;
+}
+
+.navbar-text>.bold {
+    color: white;
 }
 
 .navbar-nav {
@@ -409,11 +411,17 @@ small {
     margin-bottom: 0px;
     list-style: none;
     flex-direction: row;
-    margin-left: auto !important;
+    margin-left: auto;
 }
 
 .nav-item {
     margin-left: 20px;
+}
+
+.header-icon>img {
+    height: 24px;
+    width: 24px;
+    margin: 8px;
 }
 
 .nav-link {
@@ -428,6 +436,45 @@ small {
 
 .navbar-nav>.active>.nav-link {
     color: #fff;
+}
+
+.navbar-right {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    align-self: stretch;
+}
+
+.navbar-contract {
+    display: flex;
+    flex-grow: 1;
+    color: #999;
+    font-size: 14px;
+}
+
+.fold {
+    position: fixed;
+}
+
+.fold .navbar-text {
+    display: none;
+}
+
+.fold .navbar-contract {
+    display: none;
+}
+
+.fold .navbar-nav {
+    flex-grow: 1;
+}
+
+.fold .navbar-brand>img {
+    height: 0px;
+}
+
+.fold .hide-roll {
+    display: none;
 }
 
 @media (max-width:768px) {
@@ -447,6 +494,14 @@ small {
     }
     .content-card>.card-content {
         padding: 20px 8px;
+    }
+    .navbar-right {
+        align-items: center;
+    }
+    .header-icon>img {
+        height: 24px;
+        width: 24px;
+        margin: 15px;
     }
 }
 

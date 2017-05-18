@@ -120,10 +120,10 @@
             <div style="flex-grow:1;flex-direction:column">
                 <!--标签页列表-->
                 <div class="tablist">
-                    <div v-for="tab in tabs" @click="currentTab=tab" v-bind:class="['tabtitle',{'active':currentTab==tab}]">${tab.title}</div>
+                    <button v-for="tab in tabs" @click="currentTab=tab" v-bind:class="['tabtitle',{'active':currentTab==tab}]">${tab.title}</button>
                 </div>
                 <!--标签页正文-->
-                <div>
+                <div v-for="tab in tabs" v-show="currentTab==tab" class="editor">
                     <div v-if="currentTab.type=='work'">
 
                     </div>
@@ -131,10 +131,10 @@
 
                     </div>
                     <div v-if="currentTab.type=='note'">
+                    </div>
 
-                    </div>
-                    <div>
-                    </div>
+                    <textarea class="textarea" v-bind="tab.content"></textarea>
+
                 </div>
             </div>
 

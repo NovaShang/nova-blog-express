@@ -107,9 +107,23 @@
 .tabtitle {
     color: #999;
     padding: 10px 20px;
+    background-color: transparent;
+    border: none;
 }
 
-.tabtitle+.active {
+.tablist>.active {
     color: #FFF;
     background-color: #999;
+}
+
+.editor {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex-grow: 1;
+}
+
+.editor>.textarea {
+    flex-grow: 1;
+    resize: none;
 }
