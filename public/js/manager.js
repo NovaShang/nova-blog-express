@@ -83,6 +83,28 @@ const app = new Vue({
 
             })
         },
+        openArticle: function(id) {
+            if (!this.currentTab.dirty && this.currentTab.type == "article") {
+                this.tabs.pop(this.currentTab);
+            }
+            let opened = this.tabs.filter(x => x.data.id == id && x.type == "article")
+            if (opened.length > 0) {
+                this.currentTab = opened[0];
+            } else {
+                resArticle.query({ id: id }).then(
+                    resp => {
+                        let data = resp.body;
+                        let tab = new Tab("article", data, data.title, data.content);
+                        this.tabs.push(tab);
+                        this.currentTab = tab;
+                    }
+                )
+            };
+
+
+
+
+        }
     }
 });
 
@@ -91,3 +113,11 @@ const resArticle = Vue.resource('/api/articles{/id}');
 const resTag = Vue.resource('/api/tags{/id}');
 const resCategory = Vue.resource('/api/categories{/id}');
 const resWork = Vue.resource('/api/works{/id}');
+const Tab = function(type, data, title, content) {
+    this.type = type;
+    this.data = data;
+    this.title = title;
+    this.content = content;
+    this.dirty = false;
+    this.html = marked(content);
+}

@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
     <link href="/css/blog.css" rel="stylesheet" type="text/css" />
     <link href="/css/manager.css" rel="stylesheet" type="text/css" />
+    <link href="/css/codemirror.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="/css/font-awesome.min.css" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <title>&lt;NOVA&gt;</title>
@@ -59,7 +60,7 @@
                 <span class="fa fa-angle-left"></span>
             </button>
             <!--内容列表-->
-            <div style="height:100%;background-color:#222222;width:400px;display:flex;flex-direction:column;align-items:center" v-show="showSidebar">
+            <div style="height:100%;background-color:#222222;width:300px;display:flex;flex-direction:column;align-items:center" v-show="showSidebar">
                 <!--笔记管理-->
                 <div v-show="currentModule=='note'">
                     <div>
@@ -72,11 +73,18 @@
                 <div v-show="currentModule=='article'" class="module">
                     <div class="contentlist-container">
                         <div class="contentlist">
-                            <div v-for="article in articles" class="contentlist-item">
-                                <div class="title">
-                                    ${article.title}
+                            <div v-for="article in articles" class="contentlist-item" @click="openArticle(article.id)">
+                                <div class="header">
+                                    <div class="title">${article.title}</div>
+                                    <div class="mini-toobar">
+                                        <button><span class="fa fa-minus-square "></button>
+                                    </div>
                                 </div>
                                 <div class="tags">
+                                    <span style="color:#999">${article.category.title}</span>
+                                    <a v-for="tag in article.tags" class="tag tag-dark">
+                                        <span>${tag.name}</span>
+                                    </a>
                                 </div>
                                 <div class="content">
                                     ${article.createdAt} 浏览${article.count}
@@ -117,7 +125,7 @@
 
             </div>
             <!--标签页-->
-            <div style="flex-grow:1;flex-direction:column">
+            <div style="display:flex; flex-grow:1;flex-direction:column">
                 <!--标签页列表-->
                 <div class="tablist">
                     <button v-for="tab in tabs" @click="currentTab=tab" v-bind:class="['tabtitle',{'active':currentTab==tab}]">${tab.title}</button>
@@ -128,12 +136,24 @@
 
                     </div>
                     <div v-if="currentTab.type=='article'">
+                        <input type="text" v-model="tab.data.title" />
+                        <textarea v-model="tab.data.summary"></textarea>
+                        <a v-for="tag in tab.data.tags" class="tag tag-dark">
+                            <span>${tag.name}</span>
+                        </a>
+                        <button>添加标签</button>
+                        <select v-model="tab.data.category">
+
+                        </select>
+                        <button>上传图片</button>
+                        <button>保存</button>
 
                     </div>
                     <div v-if="currentTab.type=='note'">
                     </div>
 
-                    <textarea class="textarea" v-bind="tab.content"></textarea>
+                    <textarea class="textarea" v-bind:id="'tab_'+tab.type+'_'+tab.data.id" spellcheck="false" v-model="tab.content"></textarea>
+
 
                 </div>
             </div>
@@ -146,6 +166,7 @@
     <script src="/js/vue-resource.js "></script>
     <script src="/js/marked.js "></script>
     <script src="/js/highlight.min.js "></script>
+    <script src="/js/codemirror.js"></script>
     <script src="/js/manager.js "></script>
 
 </body>

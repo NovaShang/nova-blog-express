@@ -261,25 +261,25 @@ small {
 .tag-pill>span {
     margin: 0px;
     padding: .25em .4em;
-    border: 1px solid #007acc;
+    border: 1px solid #3e3e3e;
 }
 
 .tag-pill>span:first-child {
     border-radius: 0.25rem 0rem 0rem 0.25rem;
     color: white;
-    background-color: #007acc;
+    background-color: #3e3e3e;
 }
 
 .tag-pill>span:last-child {
     border-radius: 0rem 0.25rem 0.25rem 0rem;
-    color: #007acc;
+    color: #3e3e3e;
 }
 
 
 /*分类*/
 
 .category {
-    border-left: 4px solid #007acc;
+    border-left: 4px solid #7a7a7a;
     display: flex;
     align-items: center;
     margin: 10px;
@@ -700,7 +700,7 @@ footer {
 /*文章列表*/
 
 .article-list-title {
-    border-left: 4px solid #007acc;
+    border-left: 4px solid #7a7a7a;
     padding-left: 8px;
     margin-bottom: 10px;
 }

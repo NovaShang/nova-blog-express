@@ -23,9 +23,28 @@ router.post('/auth', async ctx => {
     }
 });
 
-// 获取文章
+// GET /articles
 router.get('/articles', async ctx => {
-    ctx.body = await db.Article.findAll();
+    ctx.body = await db.Article.findAll({
+        where: {
+            hidden: { not: true }
+        },
+        attributes: ['id', 'title', 'createdAt', 'count'],
+        include: [db.Tag, db.Category]
+    });
+});
+
+// GET /articles/:id
+router.get('/articles/:id', async ctx => {
+    let result = await db.Article.findOne({
+        where: { id: ctx.params.id },
+        include: [db.Tag, db.Category]
+    });
+    if (!result) {
+        ctx.body = { result: 'failed', message: 'None' };
+        return;
+    }
+    ctx.body = result;
 });
 
 // 添加文章
