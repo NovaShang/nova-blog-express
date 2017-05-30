@@ -310,11 +310,17 @@ small {
 /*文本框*/
 
 .textbox {
+    border: none;
     border-bottom: 3px solid #999;
-    display: flex;
     font-size: 18px;
     transition: all 0.2s;
     margin: 10px 0px;
+    background-color: transparent;
+}
+
+.textbox-inverse{
+    color: white;
+    
 }
 
 .textbox:hover {
@@ -331,6 +337,25 @@ small {
     border: none;
     flex-grow: 1;
     margin-left: 10px;
+}
+
+.select{
+    border: none;
+    border-bottom: 3px solid #999;
+    font-size: 18px;
+    transition: all 0.2s;
+    margin: 10px 0px;
+    background-color: transparent;
+    box-sizing: content-box;
+}
+
+.select-inverse{
+    color: white;
+}
+
+.select:hover{
+    border-bottom: 3px solid #007acc;
+
 }
 
 .textarea {

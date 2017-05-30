@@ -13,8 +13,8 @@ const app = new Vue({
         // 
         articles: [],
         works: [],
-
-
+        categories: [],
+        tags: [],
         tabs: [],
         currentTab: {},
         currentFunction: '',
@@ -22,7 +22,7 @@ const app = new Vue({
         showCreate: true,
         currentModule: 'article'
     },
-    created: function() {
+    created: function () {
         let savedPassword = window.localStorage.getItem('password')
         if (savedPassword) {
             this.savePassword = true;
@@ -31,7 +31,7 @@ const app = new Vue({
         }
     },
     methods: {
-        login: function() {
+        login: function () {
             this.$http.post('/api/auth', { password: this.password })
                 .then(response => {
                     if (response.body.result == 'success') {
@@ -42,20 +42,21 @@ const app = new Vue({
                         }
                         this.refreshArticles();
                         this.refreshWorks();
+                        this.refreshCategories();
+                        this.refreshTags();
                     } else {
                         alert(response.body.message);
                     }
                 }, e => {
                     alert(e)
                 })
-                .then()
         },
-        logoff: function() {
+        logoff: function () {
             this.token = '';
             window.localStorage.removeItem('password');
             this.showLogin = true;
         },
-        addTab: function() {
+        addTab: function () {
             let newWorkTab = {
                 title: "Untitled",
                 rawContent: "",
@@ -67,23 +68,24 @@ const app = new Vue({
             this.tabs.push(newWorkTab);
             this.currentTab = newWorkTab;
         },
-        addTag: function() {
+        addTag: function () {
 
 
         },
-        refreshArticles: function() {
+        refreshArticles: function () {
             resArticle.query().then(resp => {
                 this.articles = resp.body;
 
             })
         },
-        refreshWorks: function() {
+        refreshWorks: function () {
             resWork.query().then(resp => {
                 this.works = resp.body;
 
             })
         },
-        openArticle: function(id) {
+
+        openArticle: function (id) {
             if (!this.currentTab.dirty && this.currentTab.type == "article") {
                 this.tabs.pop(this.currentTab);
             }
@@ -91,19 +93,24 @@ const app = new Vue({
             if (opened.length > 0) {
                 this.currentTab = opened[0];
             } else {
-                resArticle.query({ id: id }).then(
-                    resp => {
-                        let data = resp.body;
-                        let tab = new Tab("article", data, data.title, data.content);
-                        this.tabs.push(tab);
-                        this.currentTab = tab;
-                    }
+                resArticle.query({ id: id }).then(resp => {
+                    let data = resp.body;
+                    let tab = new Tab("article", data, data.title, data.content);
+                    this.tabs.push(tab);
+                    this.currentTab = tab;
+                }
                 )
             };
-
-
-
-
+        },
+        refreshCategories: function () {
+            resCategory.query().then(resp => {
+                this.categories = resp.body;
+            })
+        },
+        refreshTags: function () {
+            resTag.query().then(resp => {
+                this.tags = resp.body;
+            });
         }
     }
 });
@@ -113,11 +120,18 @@ const resArticle = Vue.resource('/api/articles{/id}');
 const resTag = Vue.resource('/api/tags{/id}');
 const resCategory = Vue.resource('/api/categories{/id}');
 const resWork = Vue.resource('/api/works{/id}');
-const Tab = function(type, data, title, content) {
+
+Vue.http.interceptors.push(function (request, next) {
+    request.headers.set('Authorization', app.token);
+    next();
+});
+
+const Tab = function (type, data, title, content) {
     this.type = type;
     this.data = data;
     this.title = title;
     this.content = content;
     this.dirty = false;
     this.html = marked(content);
+    this.showTags=false;
 }

@@ -56,7 +56,8 @@
                 <a href="/" style="margin:10px;" v-show="showSidebar">跳转到前台</a>
             </div>
             <!--隐藏按钮-->
-            <button class="hide-sidebar-button" style="height:100%;width:10px;display:flex;flex-direction:row;align-items:center;justify-content:center" @click="showSidebar=false" v-show="showSidebar">
+            <button class="hide-sidebar-button" style="height:100%;width:10px;display:flex;flex-direction:row;align-items:center;justify-content:center"
+                @click="showSidebar=false" v-show="showSidebar">
                 <span class="fa fa-angle-left"></span>
             </button>
             <!--内容列表-->
@@ -71,6 +72,12 @@
                 </div>
                 <!--文章管理-->
                 <div v-show="currentModule=='article'" class="module">
+                    <div class="contentlist-toolbar">
+                        <button>管理分类</button>
+                        <button>管理标签</button>
+                        <button>刷新</button>
+                        <button>筛选</button>
+                    </div>
                     <div class="contentlist-container">
                         <div class="contentlist">
                             <div v-for="article in articles" class="contentlist-item" @click="openArticle(article.id)">
@@ -136,18 +143,36 @@
 
                     </div>
                     <div v-if="currentTab.type=='article'">
-                        <input type="text" v-model="tab.data.title" />
-                        <textarea v-model="tab.data.summary"></textarea>
-                        <a v-for="tag in tab.data.tags" class="tag tag-dark">
-                            <span>${tag.name}</span>
-                        </a>
-                        <button>添加标签</button>
-                        <select v-model="tab.data.category">
+                        <div class="editor-toolbar">
+                            <input style="flex-grow:1" class="textbox textbox-inverse" type="text" v-model="tab.data.title" />
+                            <div class="tag-list">
+                                <div v-for="tag in tab.data.tags" class="tag tag-dark">
+                                    <span>${tag.name}</span>
+                                </div>
+                                <button class="btn btn-none" @click="tab.showTags=true"><span class="fa fa-plus-square"></span></button>
+                                <div class="popover" style="width:300px;right:50px;" v-show="tab.showTags">
+                                    <div class="header">
+                                        <button class="btn btn-none"><span class="fa fa-plus"></span></button>
+                                        <input style="flex-grow:1;margin:0px;" class="textbox">
+                                        <button class="btn btn-none" @click="tab.showTags=false"><span class="fa fa-close"></span></button>
+                                    </div>
+                                    <div class="content">
+                                        <div v-for="tag in tags" class="tag tag-dark">
+                                            <span>${tag.name}</span>
+                                        </div>
+                                    </div>
 
-                        </select>
-                        <button>上传图片</button>
-                        <button>保存</button>
-
+                                </div>
+                            </div>
+                            <select class="select select-inverse" v-model="tab.data.category">
+                                <option v-for="cate in categories" v-bind:value="cate.name">${cate.title}</option>
+                            </select>
+                            <button class="btn btn-gray">上传图片</button>
+                            <button class="btn btn-gray">保存</button>
+                        </div>
+                        <div class="editor-toolbar">
+                            <input class="textbox textbox-inverse" type="text" v-model="tab.data.summary" style="flex-grow:1"></input>
+                        </div>
                     </div>
                     <div v-if="currentTab.type=='note'">
                     </div>
