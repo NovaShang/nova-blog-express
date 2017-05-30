@@ -100,11 +100,7 @@ const app = new Vue({
                     }
                 )
             };
-
-
-
-
-        }
+        },
     }
 });
 
@@ -113,6 +109,12 @@ const resArticle = Vue.resource('/api/articles{/id}');
 const resTag = Vue.resource('/api/tags{/id}');
 const resCategory = Vue.resource('/api/categories{/id}');
 const resWork = Vue.resource('/api/works{/id}');
+const res = {
+    article: resArticle,
+    tag: resTga,
+    category: resCategory,
+    work: resWork
+}
 const Tab = function(type, data, title, content) {
     this.type = type;
     this.data = data;
@@ -121,3 +123,28 @@ const Tab = function(type, data, title, content) {
     this.dirty = false;
     this.html = marked(content);
 }
+
+const Doc = function() {
+    this.type = type;
+    this.data = data;
+    this.title = title;
+    this.content = content;
+    this.dirty = false;
+    this.html = marked(content);
+}
+
+Doc.prototype.save = function() {
+    res[this.type].save({ id: this.data.id }, this.data).then(resp => {}, resp => {})
+}
+
+Doc.open=function(){
+
+};
+Doc.create=function(type,){
+    res[type].
+
+}
+
+var d = new Doc();
+
+d.save()
