@@ -8,17 +8,27 @@ const crypto = require('crypto');
 
 global.token = "";
 
-// 身份验证
+// Verify Token
+router.use(async (ctx, next) => {
+    if (ctx.request.header.authorization && ctx.request.header.authorization == global.token) {
+        ctx.isAuthed = true;
+    }
+    await next();
+});
+
+// POST api/auth
 router.post('/auth', async ctx => {
     if (!ctx.request.body.password) {
-        ctx.body = { result: 'failed', message: 'No Password' };
+        ctx.body = { result: 'failed', message: '缺少密码' };
+        ctx.status = 400;
         return;
     }
     if (crypto.createHmac('sha256', config.adminKey).update(ctx.request.body.password).digest('hex') == config.adminPassword) {
         global.token = uuid.v1().replace(/-/g, '');
         ctx.body = { result: 'success', token: global.token }
     } else {
-        ctx.body = { result: 'failed', message: 'Invalid Password' };
+        ctx.body = { result: 'failed', message: '密码错误' };
+        ctx.status = 401;
         return;
     }
 });
@@ -30,7 +40,13 @@ router.get('/articles', async ctx => {
             hidden: { not: true }
         },
         attributes: ['id', 'title', 'createdAt', 'count'],
-        include: [db.Tag, db.Category]
+        include: [{
+            model: db.Tag,
+            attributes: ['id', 'name']
+        }, {
+            model: db.Category,
+            attributes: ['id', 'name', 'title']
+        }]
     });
 });
 
@@ -38,39 +54,55 @@ router.get('/articles', async ctx => {
 router.get('/articles/:id', async ctx => {
     let result = await db.Article.findOne({
         where: { id: ctx.params.id },
-        include: [db.Tag, db.Category]
+        include: [{
+            model: db.Tag,
+            attributes: ['id', 'name']
+        }, {
+            model: db.Category
+            , attributes: ['id', 'name']
+        }]
     });
     if (!result) {
-        ctx.body = { result: 'failed', message: 'None' };
+        ctx.body = { result: 'failed', message: '没有找到该文章' };
+        ctx.status = 404;
         return;
     }
     ctx.body = result;
 });
 
-// 添加文章
+// POST /articles
 router.post('/articles', async ctx => {
-    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
-        ctx.body = { result: 'failed', message: 'Invalid Token' };
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
         return;
     }
-    if (!ctx.request.body.tags) { ctx.body = { result: 'failed', message: 'No Tags' }; return; }
-    var tags = (await db.Tag.findAll()).filter(x => ctx.request.body.tags.some(y => y.name));
-    var cate = await db.Category.findOne({ where: { name: ctx.request.body.cate } });
-    if (!cate) { ctx.body = { result: 'failed', message: 'Invalid Category' }; return; }
-    var article = await db.Article.create({
-        title: ctx.request.body.title,
-        summary: ctx.request.body.summary,
-        content: ctx.request.body.content
-    });
+    let data = ctx.body;
+    data.id = null;
+    if (!(data && data.tags && data.category && data.title && data.summary && data.content)) {
+        ctx.body = { result: 'failed', message: '参数不完整' };
+        ctx.status = 400;
+        return;
+    }
+    var cate = await db.Category.findOne({ where: { name: data.category.name } });
+    if (!cate) {
+        ctx.body = { result: 'failed', message: '无效的类别' };
+        ctx.status = 400;
+        return;
+    }
+    var tags = await db.Tag.findAll({ where: { name: { $in: data.tags.map(x => x.name) } } })
+    var article = await db.Article.create(data);
     article.setCategory(cate);
     article.setTags(tags);
-    ctx.body = { result: 'success', url: 'articles/' + article.id };
+    await article.save();
+    ctx.body = { result: 'success', id: article.id };
 });
 
-// 修改文章
-router.put('/articles', async ctx => {
-    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
-        ctx.body = { result: 'failed', message: 'Invalid Token' };
+// PUT /api/articles/:id
+router.put('/articles/:id', async ctx => {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
         return;
     }
     var article = await db.Article.findOne({
@@ -97,18 +129,24 @@ router.delete('/articles', async ctx => {
 
 })
 
-// 获取所有标签
+// GET /api/tags
 router.get('/tags', async ctx => {
     ctx.body = await db.Tag.findAll();
 });
 
-// 创建新标签
+// POST /api/tags
 router.post('/tags', async ctx => {
-    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
-        ctx.body = { result: 'failed', message: 'Invalid Token' };
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
         return;
     }
-    if (!ctx.request.body.name) { ctx.body = { result: 'failed', message: 'Invalid tag name' }; return; }
+    let data = ctx.request.body;
+    if (!ctx.request.body.name) {
+    ctx.body = {
+         result: 'failed', message: 'Invalid tag name'
+    }; return;
+    }
     let tag = await db.Tag.create({
         name: ctx.request.body.name,
     });

@@ -5,146 +5,143 @@ const app = new Vue({
     delimiters: ['${', '}'],
     // 数据
     data: {
-        // 登陆
-        password: '',
-        savePassword: false,
-        token: '',
-        showLogin: true,
-        // 
-        articles: [],
-        works: [],
-
-
-        tabs: [],
-        currentTab: {},
-        currentFunction: '',
-        showSidebar: true,
-        showCreate: true,
+        auth: {
+            password: '',
+            savePassword: false,
+            token: '',
+        },
+        show: {
+            login: true,
+            sidebar: true,
+            create: true,
+        },
+        docs: [],
+        currentDoc: {},
+        data: {
+            articles: [],
+            works: [],
+            categories: [],
+            tags: []
+        },
         currentModule: 'article'
     },
     created: function() {
         let savedPassword = window.localStorage.getItem('password')
         if (savedPassword) {
-            this.savePassword = true;
-            this.password = savedPassword;
+            this.auth.savePassword = true;
+            this.auth.password = savedPassword;
             this.login();
         }
     },
     methods: {
         login: function() {
-            this.$http.post('/api/auth', { password: this.password })
+            this.$http.post('/api/auth', { password: this.auth.password })
                 .then(response => {
                     if (response.body.result == 'success') {
                         this.token = response.body.token;
-                        this.showLogin = false;
+                        this.show.login = false;
                         if (this.savePassword) {
                             window.localStorage.setItem('password', this.password);
                         }
                         this.refreshArticles();
                         this.refreshWorks();
+                        this.refreshCategories();
+                        this.refreshTags();
                     } else {
                         alert(response.body.message);
                     }
                 }, e => {
                     alert(e)
                 })
-                .then()
         },
         logoff: function() {
             this.token = '';
             window.localStorage.removeItem('password');
             this.showLogin = true;
         },
-        addTab: function() {
-            let newWorkTab = {
-                title: "Untitled",
-                rawContent: "",
-                renderedContent: "",
-                data: null,
-                type: "work",
-                sourceId: 0
-            }
-            this.tabs.push(newWorkTab);
-            this.currentTab = newWorkTab;
-        },
-        addTag: function() {
-
-
-        },
+        addTab: function() {},
+        addTag: function() {},
         refreshArticles: function() {
-            resArticle.query().then(resp => {
-                this.articles = resp.body;
+            res.article.query().then(resp => {
+                this.data.articles = resp.body;
 
             })
         },
         refreshWorks: function() {
-            resWork.query().then(resp => {
-                this.works = resp.body;
+            res.work.query().then(resp => {
+                this.data.works = resp.body;
 
             })
         },
-        openArticle: function(id) {
-            if (!this.currentTab.dirty && this.currentTab.type == "article") {
-                this.tabs.pop(this.currentTab);
-            }
-            let opened = this.tabs.filter(x => x.data.id == id && x.type == "article")
-            if (opened.length > 0) {
-                this.currentTab = opened[0];
-            } else {
-                resArticle.query({ id: id }).then(
-                    resp => {
-                        let data = resp.body;
-                        let tab = new Tab("article", data, data.title, data.content);
-                        this.tabs.push(tab);
-                        this.currentTab = tab;
+        open: function(type, id) {
+            Doc.open(type, id).then(
+                result => {
+                    if (result) {
+                        this.docs.push(result);
                     }
-                )
-            };
-        },
+                }
+            )
+        }
     }
 });
 
-
-const resArticle = Vue.resource('/api/articles{/id}');
-const resTag = Vue.resource('/api/tags{/id}');
-const resCategory = Vue.resource('/api/categories{/id}');
-const resWork = Vue.resource('/api/works{/id}');
 const res = {
-    article: resArticle,
-    tag: resTga,
-    category: resCategory,
-    work: resWork
-}
-const Tab = function(type, data, title, content) {
-    this.type = type;
-    this.data = data;
-    this.title = title;
-    this.content = content;
-    this.dirty = false;
-    this.html = marked(content);
+    article: Vue.resource('/api/articles{/id}'),
+    tag: Vue.resource('/api/tags{/id}'),
+    category: Vue.resource('/api/categories{/id}'),
+    work: Vue.resource('/api/works{/id}')
 }
 
-const Doc = function() {
+Vue.http.interceptors.push(function(request, next) {
+    request.headers.set('Authorization', app.auth.token);
+    next();
+});
+
+var Doc = function(type, data) {
     this.type = type;
     this.data = data;
-    this.title = title;
-    this.content = content;
+    this.title = {
+        get: () => this.data.title,
+        set: x => this.data.title = x
+    };
+    this.content = {
+        get: () => this.data.content,
+        set: x => this.data.content = x
+    };
     this.dirty = false;
-    this.html = marked(content);
+    this.html = marked(this.content);
 }
 
 Doc.prototype.save = function() {
-    res[this.type].save({ id: this.data.id }, this.data).then(resp => {}, resp => {})
+    res[this.type].update({ id: this.data.id }, this.data).then(
+        resp => {
+            console.log(`保存文档成功 > type: ${this.type} id: ${this.id}`);
+            return true;
+        }, error => {
+            console.error(`保存文档失败 > type: ${this.type} id: ${this.id} \n` + error);
+            return false;
+        });
 }
 
-Doc.open=function(){
-
-};
-Doc.create=function(type,){
-    res[type].
-
+Doc.open = function(type, id) {
+    return res[type].get({ id: id }).then(
+        resp => {
+            console.log(`打开文档成功 > type: ${type} id: ${id}`);
+            return new Doc(type, resp.body);
+        }, error => {
+            console.error(`打开文档失败 > type: ${type} id: ${id} \n` + error)
+            return Promise.reject(error);
+        });
 }
 
-var d = new Doc();
+Doc.new = function(type) {
+    res[type].save({}, {}).then(
+        resp => {
 
-d.save()
+
+        }, error => {
+            console.error(`创建文档失败 > type: ${type} id: ${id} \n` + error)
+            return false;
+        }
+    )
+}

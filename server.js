@@ -21,4 +21,5 @@ if (process.argv[2] == 'runserver') {
 
 } else {
     app.listen(8000);
+    console.log("start")
 }

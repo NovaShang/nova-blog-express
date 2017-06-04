@@ -114,15 +114,16 @@
 }
 
 .tabtitle {
-    color: #999;
-    padding: 10px 20px;
+    color: #161616;
+    padding: 5px 10px;
     background-color: transparent;
     border: none;
 }
 
 .tablist>.active {
     color: #FFF;
-    background-color: #999;
+    border-top:3px solid #007acc;
+    background-color: #333333;
 }
 
 .editor {
@@ -130,6 +131,8 @@
     flex-direction: column;
     align-items: stretch;
     flex-grow: 1;
+    padding-top: 5px;
+    background-color: #333333;
 }
 
 .editor>.textarea {
@@ -162,4 +165,50 @@
 
 .contentlist-item:hover .mini-toobar {
     display: flex;
+}
+
+
+
+.editor-toolbar{
+    display: flex;
+    padding: 0px 10px;
+    align-items: center;
+}
+
+.editor-toolbar>*{
+    font-size: 12px;
+    margin: 4px;
+    height: 24px;
+    padding: 1px;
+
+}
+
+.editor-toolbar .btn{
+    padding: 5px;
+}
+
+.tag-list{
+    border-bottom: 3px solid #999;
+    font-size:14px;
+}
+
+.btn-none{
+    border: none;
+    background-color: transparent;
+    color: white;
+}
+
+.popover{
+    position: absolute;
+    background-color: #444444;
+    border: 1px solid #007acc;
+}
+
+.popover>.header{
+    padding: 5px;
+    display: flex;
+}
+
+.popover>.content{
+    padding: 5px;   
 }
