@@ -10,18 +10,20 @@ const app = new Vue({
             savePassword: false,
             token: '',
         },
+        newTagName: '',
         show: {
             login: true,
             sidebar: true,
             create: true,
+            tags: false
         },
         docs: [],
-        currentDoc: {},
+        currentDoc: null,
         data: {
-            articles: [],
-            works: [],
-            categories: [],
-            tags: []
+            article: [],
+            work: [],
+            category: [],
+            tag: []
         },
         currentModule: 'article'
     },
@@ -38,15 +40,16 @@ const app = new Vue({
             this.$http.post('/api/auth', { password: this.auth.password })
                 .then(response => {
                     if (response.body.result == 'success') {
-                        this.token = response.body.token;
+                        this.auth.token = response.body.token;
                         this.show.login = false;
                         if (this.savePassword) {
                             window.localStorage.setItem('password', this.password);
                         }
-                        this.refreshArticles();
-                        this.refreshWorks();
-                        this.refreshCategories();
-                        this.refreshTags();
+
+                        this.refresh('article');
+                        this.refresh('work');
+                        this.refresh('category');
+                        this.refresh('tag');
                     } else {
                         alert(response.body.message);
                     }
@@ -54,35 +57,46 @@ const app = new Vue({
                     alert(e)
                 })
         },
+
         logoff: function() {
             this.token = '';
             window.localStorage.removeItem('password');
             this.showLogin = true;
         },
-        addTab: function() {},
-        addTag: function() {},
-        refreshArticles: function() {
-            res.article.query().then(resp => {
-                this.data.articles = resp.body;
 
-            })
+        refresh: function(type) {
+            res[type].query().then(
+                resp => {
+                    this.data[type] = resp.body
+                    console.log(`刷新成功 > type: ${type}`);
+                }, resp => {
+                    console.log(`刷新失败 > type: ${type}`);
+                });
         },
-        refreshWorks: function() {
-            res.work.query().then(resp => {
-                this.data.works = resp.body;
+        addTag: function() {
+            res.tag.save({}, { name: this.newTagName }).then(x=>{this.refresh('tag')})
+        },
 
-            })
-        },
         open: function(type, id) {
             Doc.open(type, id).then(
                 result => {
                     if (result) {
+                        if (this.currentDoc && this.currentDoc.dirty == false) {
+                            this.docs.pop(this.currentDoc);
+                        }
                         this.docs.push(result);
+                        this.currentDoc = result;
                     }
-                }
-            )
+                }, result => {
+                    console.log(result);
+                });
         }
     }
+});
+
+Vue.http.interceptors.push(function(request, next) {
+    request.headers.set('Authorization', app.auth.token);
+    next(resp => resp);
 });
 
 const res = {
@@ -92,22 +106,28 @@ const res = {
     work: Vue.resource('/api/works{/id}')
 }
 
-Vue.http.interceptors.push(function(request, next) {
-    request.headers.set('Authorization', app.auth.token);
-    next();
-});
+
+const modelInfo = {
+    article: { title: 'title', content: 'content' },
+    work: { title: 'name', content: 'content' },
+}
+
+
 
 var Doc = function(type, data) {
     this.type = type;
     this.data = data;
-    this.title = {
-        get: () => this.data.title,
-        set: x => this.data.title = x
-    };
-    this.content = {
-        get: () => this.data.content,
-        set: x => this.data.content = x
-    };
+    Object.defineProperty(this, 'title', {
+        get: () => this.data[modelInfo[type].title],
+        set: x => this.data[modelInfo[type].title] = x
+    });
+    Object.defineProperty(this, 'content', {
+        get: () => this.data[modelInfo[type].content],
+        set: x => {
+            this.dirty = true;
+            this.data[modelInfo[type].content] = x;
+        }
+    });
     this.dirty = false;
     this.html = marked(this.content);
 }

@@ -114,15 +114,16 @@
 }
 
 .tabtitle {
-    color: #161616;
+    color: #888;
     padding: 5px 10px;
     background-color: transparent;
     border: none;
+    border-top: 3px solid transparent;
 }
 
 .tablist>.active {
     color: #FFF;
-    border-top:3px solid #007acc;
+    border-top: 3px solid #007acc;
     background-color: #333333;
 }
 
@@ -167,48 +168,45 @@
     display: flex;
 }
 
-
-
-.editor-toolbar{
+.editor-toolbar {
     display: flex;
     padding: 0px 10px;
     align-items: center;
 }
 
-.editor-toolbar>*{
+.editor-toolbar>* {
     font-size: 12px;
     margin: 4px;
     height: 24px;
     padding: 1px;
-
 }
 
-.editor-toolbar .btn{
+.editor-toolbar .btn {
     padding: 5px;
 }
 
-.tag-list{
+.tag-list {
     border-bottom: 3px solid #999;
-    font-size:14px;
+    font-size: 14px;
 }
 
-.btn-none{
+.btn-none {
     border: none;
     background-color: transparent;
     color: white;
 }
 
-.popover{
+.popover {
     position: absolute;
     background-color: #444444;
     border: 1px solid #007acc;
 }
 
-.popover>.header{
+.popover>.header {
     padding: 5px;
     display: flex;
 }
 
-.popover>.content{
-    padding: 5px;   
+.popover>.content {
+    padding: 5px;
 }

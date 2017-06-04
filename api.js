@@ -9,7 +9,7 @@ const crypto = require('crypto');
 global.token = "";
 
 // Verify Token
-router.use(async (ctx, next) => {
+router.use(async(ctx, next) => {
     if (ctx.request.header.authorization && ctx.request.header.authorization == global.token) {
         ctx.isAuthed = true;
     }
@@ -35,19 +35,25 @@ router.post('/auth', async ctx => {
 
 // GET /articles
 router.get('/articles', async ctx => {
-    ctx.body = await db.Article.findAll({
+    let result = await db.Article.findAll({
         where: {
             hidden: { not: true }
         },
         attributes: ['id', 'title', 'createdAt', 'count'],
         include: [{
             model: db.Tag,
-            attributes: ['id', 'name']
+            attributes: ['name']
         }, {
             model: db.Category,
-            attributes: ['id', 'name', 'title']
+            attributes: ['name', 'title']
         }]
     });
+    var data = result.map(x => x.get({ plain: true }));
+    data.forEach(x => {
+        x.category = x.category.title;
+        x.tags = x.tags.map(x => x.name);
+    });
+    ctx.body = data;
 });
 
 // GET /articles/:id
@@ -56,10 +62,10 @@ router.get('/articles/:id', async ctx => {
         where: { id: ctx.params.id },
         include: [{
             model: db.Tag,
-            attributes: ['id', 'name']
+            attributes: ['name']
         }, {
-            model: db.Category
-            , attributes: ['id', 'name']
+            model: db.Category,
+            attributes: ['name', 'title']
         }]
     });
     if (!result) {
@@ -67,7 +73,10 @@ router.get('/articles/:id', async ctx => {
         ctx.status = 404;
         return;
     }
-    ctx.body = result;
+    let d = result.get({ plain: true });
+    d.category = d.category.title;
+    d.tags = d.tags.map(y => y.name);
+    ctx.body = d;
 });
 
 // POST /articles
@@ -77,20 +86,19 @@ router.post('/articles', async ctx => {
         ctx.status = 401;
         return;
     }
-    let data = ctx.body;
-    data.id = null;
-    if (!(data && data.tags && data.category && data.title && data.summary && data.content)) {
+    let data = ctx.request.body;
+    if (!(data && data.tags && data.category && data.title)) {
         ctx.body = { result: 'failed', message: '参数不完整' };
         ctx.status = 400;
         return;
     }
-    var cate = await db.Category.findOne({ where: { name: data.category.name } });
+    var cate = await db.Category.findOne({ where: { title: data.category } });
     if (!cate) {
         ctx.body = { result: 'failed', message: '无效的类别' };
         ctx.status = 400;
         return;
     }
-    var tags = await db.Tag.findAll({ where: { name: { $in: data.tags.map(x => x.name) } } })
+    var tags = await db.Tag.findAll({ where: { name: { $in: data.tags } } });
     var article = await db.Article.create(data);
     article.setCategory(cate);
     article.setTags(tags);
@@ -105,29 +113,51 @@ router.put('/articles/:id', async ctx => {
         ctx.status = 401;
         return;
     }
+    var data = ctx.request.body;
+    data.id = undefined;
+    if (!(data && data.tags && data.category && data.title)) {
+        ctx.body = { result: 'failed', message: '参数不完整' };
+        ctx.status = 400;
+        return;
+    }
     var article = await db.Article.findOne({
-        where: { id: ctx.request.body.id }
+        where: { id: ctx.params.id }
     });
-    if (!article) { ctx.body = { result: 'failed', message: 'Article Not Found!' }; return; }
-    article.title = ctx.request.body.title;
-    article.content = ctx.request.body.content;
-    article.summary = ctx.request.body.summary;
+    if (!article) {
+        ctx.body = { result: 'failed', message: '没有找到该文章' };
+        ctx.status = 404;
+        return;
+    }
+    var cate = await db.Category.findOne({ where: { title: data.category } });
+    if (!cate) {
+        ctx.body = { result: 'failed', message: '无效的类别' };
+        ctx.status = 400;
+        return;
+    }
+    var tags = await db.Tag.findAll({ where: { name: { $in: data.tags } } });
+    await article.update(data);
+    article.setCategory(cate);
+    article.setTags(tags);
     await article.save();
     ctx.body = { result: 'success', url: 'articles/' + article.id };
 });
 
 // 删除文章
-router.delete('/articles', async ctx => {
-    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
-        ctx.body = { result: 'failed', message: 'Invalid Token' };
+router.delete('/articles/:id', async ctx => {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
         return;
     }
-    var article = await db.Article.findOne({ where: { id: ctx.request.body.id } });
-    if (!article) { ctx.body = { result: 'failed', message: 'Article Not Found!' }; return; }
+    var article = await db.Article.findOne({ where: { id: ctx.params.id } });
+    if (!article) {
+        ctx.body = { result: 'failed', message: '没有找到该文章' };
+        ctx.status = 404;
+        return;
+    }
     await article.remove();
     ctx.body = { result: 'success' };
-
-})
+});
 
 // GET /api/tags
 router.get('/tags', async ctx => {
@@ -143,9 +173,11 @@ router.post('/tags', async ctx => {
     }
     let data = ctx.request.body;
     if (!ctx.request.body.name) {
-    ctx.body = {
-         result: 'failed', message: 'Invalid tag name'
-    }; return;
+        ctx.body = {
+            result: 'failed',
+            message: 'Invalid tag name'
+        };
+        return;
     }
     let tag = await db.Tag.create({
         name: ctx.request.body.name,
