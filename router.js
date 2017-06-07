@@ -4,8 +4,6 @@ const config = require('./config');
 const Router = require('koa-router');
 const marked = require('marked');
 
-
-
 // 初始化路由
 const router = new Router();
 // 为API绑定url
@@ -25,6 +23,7 @@ router.get('/portfolio', async ctx => {
         nav: "portfolio"
     });
 });
+
 // 关于我
 router.get('/about', async ctx => {
     ctx.body = await ctx.render('about', {
@@ -32,6 +31,7 @@ router.get('/about', async ctx => {
     })
 
 });
+
 // 后台
 router.get('/admin', async ctx => {
     ctx.body = await ctx.render('manager')
@@ -39,7 +39,7 @@ router.get('/admin', async ctx => {
 });
 
 // 添加中间件，用于显示分类和标签列表
-router.use(async (ctx, next) => {
+router.use(async(ctx, next) => {
     ctx.cates = await db.Category.findAll({ include: [{ model: db.Article, attributes: ['id'] }] });
     ctx.tags = await db.Tag.findAll({ include: [{ model: db.Article, attributes: ['id'] }] });
     await next();

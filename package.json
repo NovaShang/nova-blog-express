@@ -21,6 +21,7 @@
     "koa-router": "^7.0.0",
     "koa-static": "^3.0.0",
     "koa2-swig": "^2.2.1",
+    "marked": "^0.3.6",
     "sequelize": "^3.30.2",
     "sqlite3": "^3.1.8"
   },

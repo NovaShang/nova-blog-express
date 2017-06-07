@@ -14,7 +14,7 @@ const app = new Vue({
         show: {
             login: true,
             sidebar: true,
-            create: true,
+            create: false,
             tags: false
         },
         docs: [],
@@ -23,12 +23,14 @@ const app = new Vue({
             article: [],
             work: [],
             category: [],
-            tag: []
+            tag: [],
+            folder: [],
+
         },
         currentModule: 'article'
     },
     created: function() {
-        let savedPassword = window.localStorage.getItem('password')
+        let savedPassword = window.localStorage.getItem('password');
         if (savedPassword) {
             this.auth.savePassword = true;
             this.auth.password = savedPassword;
@@ -42,14 +44,15 @@ const app = new Vue({
                     if (response.body.result == 'success') {
                         this.auth.token = response.body.token;
                         this.show.login = false;
-                        if (this.savePassword) {
-                            window.localStorage.setItem('password', this.password);
+                        if (this.auth.savePassword) {
+                            window.localStorage.setItem('password', this.auth.password);
                         }
-
                         this.refresh('article');
                         this.refresh('work');
                         this.refresh('category');
                         this.refresh('tag');
+                        this.refresh('folder');
+                        this.refresh('note')
                     } else {
                         alert(response.body.message);
                     }
@@ -74,7 +77,7 @@ const app = new Vue({
                 });
         },
         addTag: function() {
-            res.tag.save({}, { name: this.newTagName }).then(x=>{this.refresh('tag')})
+            res.tag.save({}, { name: this.newTagName }).then(x => { this.refresh('tag') })
         },
 
         open: function(type, id) {
@@ -103,7 +106,9 @@ const res = {
     article: Vue.resource('/api/articles{/id}'),
     tag: Vue.resource('/api/tags{/id}'),
     category: Vue.resource('/api/categories{/id}'),
-    work: Vue.resource('/api/works{/id}')
+    work: Vue.resource('/api/works{/id}'),
+    note: Vue.resource('/api/notes{/id}'),
+    folder: Vue.resource('/api/works{/id}')
 }
 
 

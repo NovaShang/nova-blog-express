@@ -14,8 +14,6 @@ app.context.render = swig({
 });
 app.use(router.routes());
 
-//===============================Run==============================
-
 if (process.argv[2] == 'runserver') {
     app.listen(80);
 

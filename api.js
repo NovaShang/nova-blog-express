@@ -343,5 +343,123 @@ router.delete('/works/:id', async ctx => {
     ctx.body = { result: 'success' };
 })
 
+// GET /api/notes
+router.get('/notes', async ctx => {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
+        return;
+    }
+    let result = await db.Note.findAll({
+        attributes: ['id', 'title', 'folderId', 'createdAt'],
+    });
+    var data = result.map(x => x.get({ plain: true }));
+    ctx.body = data;
+});
+
+
+// GET /api/notes/:id
+router.get('/notes/:id', async ctx => {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
+        return;
+    }
+    let result = await db.Note.findOne({
+        where: { id: ctx.params.id },
+        attributes: ['id', 'title', 'content', 'folderId', 'createdAt'],
+    });
+    if (!result) {
+        ctx.body = { result: 'failed', message: '没有找到该笔记' };
+        ctx.status = 404;
+        return;
+    }
+    var data = result.map(x => x.get({ plain: true }));
+    ctx.body = data;
+});
+
+// POST /api/notes
+router.post('/notes', async ctx => {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
+        return;
+    }
+    let data = ctx.request.body;
+    if (!(data && data.title)) {
+        ctx.body = { result: 'failed', message: '参数不完整' };
+        ctx.status = 400;
+        return;
+    }
+    var note = await db.Note.create(data);
+    ctx.body = { result: 'success', id: note.id };
+});
+
+// PUT /api/notes/:id
+router.put('/notes/:id', async ctx => {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
+        return;
+    }
+    let data = ctx.request.body;
+    data.id = undefined;
+    let result = await db.Note.findOne({
+        where: { id: ctx.params.id },
+    });
+    if (!result) {
+        ctx.body = { result: 'failed', message: '没有找到该笔记' };
+        ctx.status = 404;
+        return;
+    }
+    await result.update(data);
+    ctx.body = { result: 'success' };
+});
+
+// DELETE /api/notes/:id
+router.delete('/notes/:id', async ctx => {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
+        return;
+    }
+    let result = await db.Note.findOne({
+        where: { id: ctx.params.id },
+    });
+    if (!result) {
+        ctx.body = { result: 'failed', message: '没有找到该笔记' };
+        ctx.status = 404;
+        return;
+    }
+    await result.delete();
+    ctx.body = { result: 'success' };
+});
+
+// GET /api/folders
+router.get('/folders', async ctx => {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
+        return;
+    }
+    let result = await db.Note.findAll({
+        include: [db.Folder]
+    });
+    ctx.body = result;
+
+});
+
+// POST /api/folders
+router.post('/folders', async ctx => {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
+        return;
+    }
+    let data = ctx.request.body;
+    await db.Note.create(data);
+    ctx.body = { result: 'success' };
+});
+
 
 module.exports = router;

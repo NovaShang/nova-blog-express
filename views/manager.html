@@ -18,23 +18,35 @@
         <!--对话框-->
         <div style="position:absolute;height:100%;width:100%;top:0;left:0" v-show="show.login">
             <!--登陆对话框-->
-            <div class="modal-dialog" v-show="show.login">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">
-                            登陆
-                        </h4>
+            <div class="modal" v-show="show.login">
+                <div class="header">
+                    <span class="title">登陆</span>
+                    <button class="modal-control" style="color:#999">X</button>
+                </div>
+                <div class="content">
+                    <input type="password" class="textbox textbox-inverse" id="password" placeholder="请输入密码" v-model="auth.password" style="width:350px;" value="">
+                    <div class="checkbox">
+                        <label><input type="checkbox"  v-model="auth.savePassword">记住密码</label>
                     </div>
-                    <div class="modal-body">
-                        <label for="password">密码</label>
-                        <input type="password" class="form-control" id="password" placeholder="请输入密码" v-model="auth.password" value="">
-                        <div class="checkbox">
-                            <label><input type="checkbox"  v-model="auth.savePassword">记住密码</label>
-                        </div>
+                </div>
+                <div class="footer">
+                    <button type="button" class="btn btn-gray" @click="login">登陆</button>
+                </div>
+            </div>
+            <!--新建笔记对话框-->
+            <div class="modal" v-show="show.create">
+                <div class="modal-header">
+                    新建笔记
+                </div>
+                <div class="modal-body">
+                    <label for="password">密码</label>
+                    <input type="password" class="form-control" id="password" placeholder="请输入密码" v-model="auth.password" value="">
+                    <div class="checkbox">
+                        <label><input type="checkbox"  v-model="auth.savePassword">记住密码</label>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" @click="login">登陆</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @click="login">登陆</button>
                 </div>
             </div>
         </div>
@@ -45,7 +57,7 @@
                 <img src="/img/NewLogo512.png" style="height:128px;width:128px;margin-top:40px;" v-show="show.sidebar">
                 <button type="button" v-bind:class="['btn','btn-gray',{'addbutton-normal':show.sidebar,'addbutton-thin':!show.sidebar}]">
                     <span class="fa fa-plus"></span>
-                    <span v-show="show.sidebar"> 新建笔记</span>
+                    <span v-show="show.sidebar" @click="show.create=true"> 新建笔记</span>
                 </button>
                 <div style="flex-grow:1;width:100%">
                     <button v-bind:class="{'modulelist-item':true,'active':currentModule=='note'}" @click="show.sidebar=true;currentModule='note'"><span class="fa fa-sticky-note-o icon"></span><span class="text" v-show="show.sidebar">笔记管理</span></button>
@@ -145,7 +157,7 @@
                     </div>
                     <div class="content">
                         <div v-for="tag in data.tag" class="tag tag-dark" v-show="(!currentDoc)||(!currentDoc.data.tags.includes(tag.name))">
-                            <span @click="currentDoc.data.tags.push(tag.name)" >${tag.name}</span>
+                            <span @click="currentDoc.data.tags.push(tag.name)">${tag.name}</span>
                         </div>
                     </div>
                 </div>
