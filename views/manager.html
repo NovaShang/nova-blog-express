@@ -16,9 +16,9 @@
 <body style="height:100%;padding-top:0px;background-color:#555555">
     <div id="app" style="height:100%">
         <!--对话框-->
+        <!--登陆对话框-->
         <div style="position:absolute;height:100%;width:100%;top:0;left:0" v-show="show.login">
-            <!--登陆对话框-->
-            <div class="modal" v-show="show.login">
+            <div class="modal">
                 <div class="header">
                     <span class="title">登陆</span>
                     <button class="modal-control" style="color:#999">X</button>
@@ -33,21 +33,40 @@
                     <button type="button" class="btn btn-gray" @click="login">登陆</button>
                 </div>
             </div>
-            <!--新建笔记对话框-->
-            <div class="modal" v-show="show.create">
-                <div class="modal-header">
-                    新建笔记
+        </div>
+        <!--新建笔记对话框-->
+        <div class="modal" v-show="show.create">
+            <div class="modal-header">
+                新建笔记
+            </div>
+            <div class="modal-body">
+                <label for="password">密码</label>
+                <input type="password" class="form-control" id="password" placeholder="请输入密码" v-model="auth.password" value="">
+                <div class="checkbox">
+                    <label><input type="checkbox"  v-model="auth.savePassword">记住密码</label>
                 </div>
-                <div class="modal-body">
-                    <label for="password">密码</label>
-                    <input type="password" class="form-control" id="password" placeholder="请输入密码" v-model="auth.password" value="">
-                    <div class="checkbox">
-                        <label><input type="checkbox"  v-model="auth.savePassword">记住密码</label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" @click="login">登陆</button>
-                </div>
+            </div>
+            <div class="footer">
+                <button type="button" class="btn btn-gray" @click="login">确定</button>
+                <button type="button" class="btn btn-gray" @click="login">取消</button>
+
+            </div>
+        </div>
+        <!--新建文章对话框-->
+        <div class="modal" v-show="show.createArticle">
+            <div class="header">
+                <span class="title">新建文章</span>
+            </div>
+            <div class="content">
+                <input style="flex-grow:1" class="textbox textbox-inverse" type="text" v-model="create.article.title" />
+                <select class="select select-inverse" v-model="create.article.category">
+                    <option v-for="cate in data.category" v-bind:value="cate.title">${cate.title}</option>
+                </select>
+            </div>
+            <div class="footer">
+                <button type="button" class="btn btn-gray" @click="createArticle">确定</button>
+                <button type="button" class="btn btn-gray" @click="show.createArticle=false">取消</button>
+
             </div>
         </div>
         <!--主界面-->
@@ -85,6 +104,7 @@
                 <!--文章管理-->
                 <div v-show="currentModule=='article'" class="module">
                     <div class="contentlist-toolbar">
+                        <button @click="show.createArticle=true">添加文章</button>
                         <button>管理分类</button>
                         <button>管理标签</button>
                         <button>刷新</button>

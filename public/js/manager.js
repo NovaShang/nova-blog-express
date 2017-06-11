@@ -15,7 +15,14 @@ const app = new Vue({
             login: true,
             sidebar: true,
             create: false,
-            tags: false
+            tags: false,
+            createArticle: false
+        },
+        create: {
+            article: {
+                title: "",
+                category: ""
+            }
         },
         docs: [],
         currentDoc: null,
@@ -94,6 +101,10 @@ const app = new Vue({
                 }, result => {
                     console.log(result);
                 });
+        },
+
+        createArticle: function() {
+
         }
     }
 });
