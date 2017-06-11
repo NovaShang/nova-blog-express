@@ -65,6 +65,7 @@
                     <button v-bind:class="{'modulelist-item':true,'active':currentModule=='work'}" @click="show.sidebar=true;currentModule='work'"><span class="fa fa-flag-checkered icon"></span><span class="text" v-show="show.sidebar">作品管理</span></button>
                     <button v-bind:class="{'modulelist-item':true,'active':currentModule=='comment'}" @click="show.sidebar=true;currentModule='comment'"><span class="fa fa-commenting-o icon"></span><span class="text" v-show="show.sidebar">评论管理</span></button>
                 </div>
+                <a @click="logoff" v-show="show.sidebar">退出登录</a>
                 <a href="/" style="margin:10px;" v-show="show.sidebar">跳转到前台</a>
             </div>
             <!--隐藏按钮-->

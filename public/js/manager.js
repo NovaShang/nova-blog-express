@@ -25,6 +25,7 @@ const app = new Vue({
             category: [],
             tag: [],
             folder: [],
+            note:[]
 
         },
         currentModule: 'article'
@@ -64,7 +65,7 @@ const app = new Vue({
         logoff: function() {
             this.token = '';
             window.localStorage.removeItem('password');
-            this.showLogin = true;
+            window.document.location.reload();
         },
 
         refresh: function(type) {
