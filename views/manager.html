@@ -17,56 +17,51 @@
     <div id="app" style="height:100%">
         <!--对话框-->
         <!--登陆对话框-->
-        <div style="position:absolute;height:100%;width:100%;top:0;left:0" v-show="show.login">
-            <div class="modal">
-                <div class="header">
-                    <span class="title">登陆</span>
-                    <button class="modal-control" style="color:#999">X</button>
-                </div>
-                <div class="content">
-                    <input type="password" class="textbox textbox-inverse" id="password" placeholder="请输入密码" v-model="auth.password" style="width:350px;" value="">
-                    <div class="checkbox">
-                        <label><input type="checkbox"  v-model="auth.savePassword">记住密码</label>
-                    </div>
-                </div>
-                <div class="footer">
-                    <button type="button" class="btn btn-gray" @click="login">登陆</button>
-                </div>
+        <div class="modal" v-show="show.login">
+            <div class="header">
+                <span class="title">登陆</span>
+                <button class="modal-control" style="color:#999">X</button>
             </div>
-        </div>
-        <!--新建笔记对话框-->
-        <div class="modal" v-show="show.create">
-            <div class="modal-header">
-                新建笔记
-            </div>
-            <div class="modal-body">
-                <label for="password">密码</label>
-                <input type="password" class="form-control" id="password" placeholder="请输入密码" v-model="auth.password" value="">
+            <div class="content">
+                <input type="password" class="textbox textbox-inverse" id="password" placeholder="请输入密码" v-model="auth.password" style="width:350px;"
+                    value="">
                 <div class="checkbox">
                     <label><input type="checkbox"  v-model="auth.savePassword">记住密码</label>
                 </div>
             </div>
             <div class="footer">
-                <button type="button" class="btn btn-gray" @click="login">确定</button>
-                <button type="button" class="btn btn-gray" @click="login">取消</button>
-
+                <button type="button" class="btn btn-gray" @click="login">登陆</button>
             </div>
         </div>
         <!--新建文章对话框-->
-        <div class="modal" v-show="show.createArticle">
+        <div class="modal" v-show="show.article">
             <div class="header">
                 <span class="title">新建文章</span>
             </div>
             <div class="content">
-                <input style="flex-grow:1" class="textbox textbox-inverse" type="text" v-model="create.article.title" />
-                <select class="select select-inverse" v-model="create.article.category">
+                <input style="display:block" class="textbox textbox-inverse" type="text" v-model="create.article.title" placeholder="输入标题"
+                />
+                <select style="display:block" class="select select-inverse" v-model="create.article.category">
                     <option v-for="cate in data.category" v-bind:value="cate.title">${cate.title}</option>
                 </select>
             </div>
             <div class="footer">
-                <button type="button" class="btn btn-gray" @click="createArticle">确定</button>
-                <button type="button" class="btn btn-gray" @click="show.createArticle=false">取消</button>
-
+                <button type="button" class="btn btn-gray" @click="createDoc('article')">确定</button>
+                <button type="button" class="btn btn-gray" @click="show.article=false">取消</button>
+            </div>
+        </div>
+        <!--新建作品对话框-->
+        <div class="modal" v-show="show.work">
+            <div class="header">
+                <span class="title">新建作品</span>
+            </div>
+            <div class="content">
+                <input style="display:block" class="textbox textbox-inverse" type="text" v-model="create.work.title" placeholder="输入标题"
+                />
+            </div>
+            <div class="footer">
+                <button type="button" class="btn btn-gray" @click="createDoc('work')">确定</button>
+                <button type="button" class="btn btn-gray" @click="show.work=false">取消</button>
             </div>
         </div>
         <!--主界面-->
@@ -76,10 +71,9 @@
                 <img src="/img/NewLogo512.png" style="height:128px;width:128px;margin-top:40px;" v-show="show.sidebar">
                 <button type="button" v-bind:class="['btn','btn-gray',{'addbutton-normal':show.sidebar,'addbutton-thin':!show.sidebar}]">
                     <span class="fa fa-plus"></span>
-                    <span v-show="show.sidebar" @click="show.create=true"> 新建笔记</span>
+                    <span v-show="show.sidebar" @click="show.article=true"> 新建文章</span>
                 </button>
                 <div style="flex-grow:1;width:100%">
-                    <button v-bind:class="{'modulelist-item':true,'active':currentModule=='note'}" @click="show.sidebar=true;currentModule='note'"><span class="fa fa-sticky-note-o icon"></span><span class="text" v-show="show.sidebar">笔记管理</span></button>
                     <button v-bind:class="{'modulelist-item':true,'active':currentModule=='article'}" @click="show.sidebar=true;currentModule='article'"><span class="fa fa-file-text-o icon"></span><span class="text" v-show="show.sidebar">文章管理</span></button>
                     <button v-bind:class="{'modulelist-item':true,'active':currentModule=='work'}" @click="show.sidebar=true;currentModule='work'"><span class="fa fa-flag-checkered icon"></span><span class="text" v-show="show.sidebar">作品管理</span></button>
                     <button v-bind:class="{'modulelist-item':true,'active':currentModule=='comment'}" @click="show.sidebar=true;currentModule='comment'"><span class="fa fa-commenting-o icon"></span><span class="text" v-show="show.sidebar">评论管理</span></button>
@@ -88,35 +82,27 @@
                 <a href="/" style="margin:10px;" v-show="show.sidebar">跳转到前台</a>
             </div>
             <!--隐藏按钮-->
-            <button class="hide-sidebar-button" style="height:100%;width:10px;display:flex;flex-direction:row;align-items:center;justify-content:center" @click="show.sidebar=false" v-show="show.sidebar">
+            <button class="hide-sidebar-button" style="height:100%;width:10px;display:flex;flex-direction:row;align-items:center;justify-content:center"
+                @click="show.sidebar=false" v-show="show.sidebar">
                 <span class="fa fa-angle-left"></span>
             </button>
             <!--内容列表-->
             <div style="height:100%;background-color:#222222;width:300px;display:flex;flex-direction:column;align-items:center" v-show="show.sidebar">
-                <!--笔记管理-->
-                <div v-show="currentModule=='note'">
-                    <div>
-
-
-
-                    </div>
-                </div>
                 <!--文章管理-->
                 <div v-show="currentModule=='article'" class="module">
                     <div class="contentlist-toolbar">
-                        <button @click="show.createArticle=true">添加文章</button>
-                        <button>管理分类</button>
-                        <button>管理标签</button>
-                        <button>刷新</button>
-                        <button>筛选</button>
+                        <button class="btn btn-gray" @click="show.createArticle=true">添加文章</button>
+                        <button class="btn btn-gray">管理分类</button>
+                        <button class="btn btn-gray">管理标签</button>
+                        <button class="btn btn-gray" @click="refresh('article')">刷新</button>
                     </div>
                     <div class="contentlist-container">
                         <div class="contentlist">
                             <div v-for="article in data.article" class="contentlist-item" @click="open('article',article.id)">
                                 <div class="header">
                                     <div class="title">${article.title}</div>
-                                    <div class="mini-toobar">
-                                        <button><span class="fa fa-minus-square "></span></button>
+                                    <div class="mini-toolbar">
+                                        <button @click.stop="hide('article',article.id)"><span class="fa fa-minus-square "></span></button>
                                     </div>
                                 </div>
                                 <div class="tags">
@@ -132,7 +118,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!--作品管理-->
                 <div v-show="currentModule=='work'" class="module">
                     <div>

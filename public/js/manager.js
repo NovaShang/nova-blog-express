@@ -10,18 +10,32 @@ const app = new Vue({
             savePassword: false,
             token: '',
         },
-        newTagName: '',
         show: {
             login: true,
             sidebar: true,
-            create: false,
-            tags: false,
-            createArticle: false
+            tag: false,
+            tech: false,
+            category: false,
+            article: false,
+            work: false
         },
         create: {
             article: {
                 title: "",
-                category: ""
+                category: "",
+                content: "",
+                tags: []
+            },
+            tag: {
+                name: ""
+            },
+            category: {
+                name: "",
+                title: "",
+            },
+            work: {
+                name: "",
+                teches: []
             }
         },
         docs: [],
@@ -31,13 +45,11 @@ const app = new Vue({
             work: [],
             category: [],
             tag: [],
-            folder: [],
-            note:[]
-
+            tech: []
         },
         currentModule: 'article'
     },
-    created: function() {
+    created: function () {
         let savedPassword = window.localStorage.getItem('password');
         if (savedPassword) {
             this.auth.savePassword = true;
@@ -46,7 +58,7 @@ const app = new Vue({
         }
     },
     methods: {
-        login: function() {
+        login: function () {
             this.$http.post('/api/auth', { password: this.auth.password })
                 .then(response => {
                     if (response.body.result == 'success') {
@@ -56,26 +68,23 @@ const app = new Vue({
                             window.localStorage.setItem('password', this.auth.password);
                         }
                         this.refresh('article');
-                        this.refresh('work');
                         this.refresh('category');
                         this.refresh('tag');
-                        this.refresh('folder');
-                        this.refresh('note')
+                        this.refresh('work');
+                        this.refresh('tech');
                     } else {
                         alert(response.body.message);
                     }
                 }, e => {
                     alert(e)
-                })
+                });
         },
-
-        logoff: function() {
+        logoff: function () {
             this.token = '';
             window.localStorage.removeItem('password');
             window.document.location.reload();
         },
-
-        refresh: function(type) {
+        refresh: function (type) {
             res[type].query().then(
                 resp => {
                     this.data[type] = resp.body
@@ -84,11 +93,12 @@ const app = new Vue({
                     console.log(`刷新失败 > type: ${type}`);
                 });
         },
-        addTag: function() {
-            res.tag.save({}, { name: this.newTagName }).then(x => { this.refresh('tag') })
+        create: function (type) {
+            res[type].save({}, this.create[type]).then(x => {
+                this.refresh(type)
+            });
         },
-
-        open: function(type, id) {
+        open: function (type, id) {
             Doc.open(type, id).then(
                 result => {
                     if (result) {
@@ -102,14 +112,27 @@ const app = new Vue({
                     console.log(result);
                 });
         },
-
-        createArticle: function() {
-
+        hide: function (type, id) {
+            res[type].delete({ id: id }).then(resp => {
+                this.refresh(type);
+            }, resp => {
+                console.log("删除失败");
+            });
+        },
+        createDoc: function (type) {
+            Doc.new(type, this.create[type]).then(id => {
+                this.open(type, id);
+                this.refresh(type);
+                this.create[title].title = "";
+                this.show[type] = false;
+            }, result => {
+                console.log(result);
+            });
         }
     }
 });
 
-Vue.http.interceptors.push(function(request, next) {
+Vue.http.interceptors.push(function (request, next) {
     request.headers.set('Authorization', app.auth.token);
     next(resp => resp);
 });
@@ -119,48 +142,30 @@ const res = {
     tag: Vue.resource('/api/tags{/id}'),
     category: Vue.resource('/api/categories{/id}'),
     work: Vue.resource('/api/works{/id}'),
-    note: Vue.resource('/api/notes{/id}'),
-    folder: Vue.resource('/api/works{/id}')
+    tech: Vue.resource('/api/teches{/id}')
 }
 
-
-const modelInfo = {
-    article: { title: 'title', content: 'content' },
-    work: { title: 'name', content: 'content' },
-}
-
-
-
-var Doc = function(type, data) {
+var Doc = function (type, data) {
     this.type = type;
     this.data = data;
-    Object.defineProperty(this, 'title', {
-        get: () => this.data[modelInfo[type].title],
-        set: x => this.data[modelInfo[type].title] = x
-    });
-    Object.defineProperty(this, 'content', {
-        get: () => this.data[modelInfo[type].content],
-        set: x => {
-            this.dirty = true;
-            this.data[modelInfo[type].content] = x;
-        }
-    });
     this.dirty = false;
-    this.html = marked(this.content);
+    this.html = marked(data.content);
 }
 
-Doc.prototype.save = function() {
+Doc.prototype.save = function () {
     res[this.type].update({ id: this.data.id }, this.data).then(
         resp => {
-            console.log(`保存文档成功 > type: ${this.type} id: ${this.id}`);
+            console.log(`保存文档成功 > type: ${this.type} id: ${this.data.id}`);
+            this.dirty = false;
             return true;
         }, error => {
-            console.error(`保存文档失败 > type: ${this.type} id: ${this.id} \n` + error);
+            console.error(`保存文档失败 > type: ${this.type} id: ${this.data.id} \n` + error);
+            alert("保存文件失败");
             return false;
         });
 }
 
-Doc.open = function(type, id) {
+Doc.open = function (type, id) {
     return res[type].get({ id: id }).then(
         resp => {
             console.log(`打开文档成功 > type: ${type} id: ${id}`);
@@ -171,14 +176,14 @@ Doc.open = function(type, id) {
         });
 }
 
-Doc.new = function(type) {
-    res[type].save({}, {}).then(
+Doc.new = function (type, data) {
+    return res[type].save({}, data).then(
         resp => {
-
-
+            console.log(`新建文档成功 > type: ${type} id: ${resp.body.id}`);
+            return resp.body.id;
         }, error => {
-            console.error(`创建文档失败 > type: ${type} id: ${id} \n` + error)
-            return false;
+            console.error(`创建文档失败 > type: ${type} \n` + error)
+            return Promise.reject(error);
         }
-    )
+    );
 }

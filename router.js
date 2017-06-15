@@ -6,8 +6,10 @@ const marked = require('marked');
 
 // 初始化路由
 const router = new Router();
+
 // 为API绑定url
 router.use('/api', api.routes());
+
 // 作品集
 router.get('/portfolio', async ctx => {
     let page = parseInt(ctx.query.page);
@@ -39,7 +41,7 @@ router.get('/admin', async ctx => {
 });
 
 // 添加中间件，用于显示分类和标签列表
-router.use(async(ctx, next) => {
+router.use(async (ctx, next) => {
     ctx.cates = await db.Category.findAll({ include: [{ model: db.Article, attributes: ['id'] }] });
     ctx.tags = await db.Tag.findAll({ include: [{ model: db.Article, attributes: ['id'] }] });
     await next();
@@ -50,9 +52,12 @@ router.get('/', async ctx => {
     let page = parseInt(ctx.query.page);
     if (!page) { page = 1; }
     let result = await db.Article.findAndCountAll({
+        where: { hidden: { $not: true } },
         order: 'article.createdAt DESC',
         include: [db.Category, db.Tag],
-        distinct: true
+        distinct: true,
+        offset:(page-1)*config.perpage,
+        limit:config.perpage
     });
     ctx.body = await ctx.render('blog', {
         articles: result.rows,
@@ -72,6 +77,7 @@ router.get('/tags/:id', async ctx => {
     if (!tag) { ctx.redirect('/blog'); return; }
     let num = await tag.countArticles()
     let articles = await tag.getArticles({
+        where: { hidden: { $not: true } },
         include: [db.Category, db.Tag],
         order: 'article.createdAt DESC',
         offset: (page - 1) * config.perpage,
@@ -98,7 +104,7 @@ router.get('/categories/:name', async ctx => {
     if (!cate) { ctx.redirect('/blog'); return; }
     let result = await db.Article.findAndCountAll({
         include: [db.Category, db.Tag],
-        where: { categoryId: cate.id },
+        where: { categoryId: cate.id, hidden: { $not: true } },
         offset: (page - 1) * config.perpage,
         limit: config.perpage,
         distinct: true
@@ -118,16 +124,20 @@ router.get('/categories/:name', async ctx => {
 // 文章正文页
 router.get('/articles/:id', async ctx => {
     let article = await db.Article.findOne({
-        where: { id: ctx.params.id },
+        where: { id: ctx.params.id, hidden: { $not: true } },
         include: [db.Tag, db.Category, db.Comment]
     });
+    if (!article) {
+        ctx.status = 404;
+        return;
+    }
     let pre = await db.Article.findOne({
-        where: { createdAt: { $lt: article.createdAt } },
+        where: { createdAt: { $lt: article.createdAt }, hidden: { $not: true } },
         attributes: ['id', 'title'],
         order: 'createdAt DESC',
     });
     let next = await db.Article.findOne({
-        where: { createdAt: { $gt: article.createdAt } },
+        where: { createdAt: { $gt: article.createdAt }, hidden: { $not: true } },
         attributes: ['id', 'title'],
         offset: 1,
         order: 'createdAt',
@@ -144,5 +154,27 @@ router.get('/articles/:id', async ctx => {
     });
 });
 
+// 发表评论
+router.post('/articles/comments', async ctx => {
+    let data = ctx.request.body;
+    if (!(data.content && data.uname && data.email && data.aid)) {
+        ctx.body = await ctx.render('base', {
+            content: "参数错误！"
+        });
+        return;
+    }
+    let article = await db.Article.findById(data.aid);
+    if (!article) {
+        ctx.body = await ctx.render('base', { content: "文章不存在" });
+        return;
+    }
+    let comment = await db.Comment.create({
+        uname: data.uname,
+        content: data.content,
+        articleId: data.aid,
+        email: data.email
+    });
+    ctx.redirect('/articleS/' + data.aid);
+});
 
 module.exports = router;

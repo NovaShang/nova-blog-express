@@ -9,7 +9,7 @@ const crypto = require('crypto');
 global.token = "";
 
 // Verify Token
-router.use(async(ctx, next) => {
+router.use(async (ctx, next) => {
     if (ctx.request.header.authorization && ctx.request.header.authorization == global.token) {
         ctx.isAuthed = true;
     }
@@ -142,7 +142,7 @@ router.put('/articles/:id', async ctx => {
     ctx.body = { result: 'success', url: 'articles/' + article.id };
 });
 
-// 删除文章
+// DELETE /api/articles/:id
 router.delete('/articles/:id', async ctx => {
     if (!ctx.isAuthed) {
         ctx.body = { result: 'failed', message: '令牌错误' };
@@ -155,7 +155,8 @@ router.delete('/articles/:id', async ctx => {
         ctx.status = 404;
         return;
     }
-    await article.remove();
+    article.hidden = true;
+    await article.save();
     ctx.body = { result: 'success' };
 });
 
@@ -172,11 +173,12 @@ router.post('/tags', async ctx => {
         return;
     }
     let data = ctx.request.body;
-    if (!ctx.request.body.name) {
+    if (!data.name) {
         ctx.body = {
             result: 'failed',
-            message: 'Invalid tag name'
+            message: '参数不完整'
         };
+        ctx.status = 400;
         return;
     }
     let tag = await db.Tag.create({
@@ -185,95 +187,32 @@ router.post('/tags', async ctx => {
     ctx.body = { result: 'success', tag: tag };
 });
 
-// 修改标签
-router.put('/tags', async ctx => {
-    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
-        ctx.body = { result: 'failed', message: 'Invalid Token' };
-        return;
-    }
-    let tag = db.Tag.findOne({ where: { id: ctx.request.body.id } });
-    if (!tag) { ctx.body = { result: 'failed', message: 'Tag Not Found!' }; return; }
-    tag.name = ctx.request.body.name;
-    await tag.save();
-    ctx.body = { result: 'success' };
-});
-
-// 删除标签
-router.delete('api/tags', async ctx => {
-    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
-        ctx.body = { result: 'failed', message: 'Invalid Token' };
-        return;
-    }
-    let tag = db.Tag.findOne({ where: { id: ctx.request.body.id } });
-    if (!tag) { ctx.body = { result: 'failed', message: 'Tag Not Found!' }; return; }
-    await tag.remove();
-    ctx.body = { result: 'success' };
-})
-
-// 获取所有分类
+// GET /api/categories
 router.get('/categories', async ctx => {
     ctx.body = await db.Category.findAll();
 });
 
-// 添加新分类
+// POST /api/categories
 router.post('/categories', async ctx => {
-    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
-        ctx.body = { result: 'failed', message: 'Invalid Token' };
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
         return;
     }
-    if (!(ctx.request.body.name && ctx.request.body.title)) { ctx.body = { result: 'failed', message: 'Invalid category' }; return; }
+    let data = ctx.request.body;
+    if (!(data && data.name && data.title)) {
+        ctx.body = {
+            result: 'failed',
+            message: '参数不完整'
+        };
+        ctx.status = 400;
+        return;
+    }
     let cate = await db.Category.create({
         name: ctx.request.body.name,
         title: ctx.request.body.title
     });
     ctx.body = { result: 'success', category: cate };
-});
-
-// 修改现有分类
-router.put('/categories', async ctx => {
-    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
-        ctx.body = { result: 'failed', message: 'Invalid Token' };
-        return;
-    }
-    let category = await db.Category.findOne({ where: { id: ctx.request.body.id } });
-    if (!category) { ctx.body = { result: 'failed', message: 'Category Not Found!' }; return; }
-    category.name = ctx.request.body.name;
-    category.title = ctx.request.body.title;
-    await category.save()
-    ctx.body = { result: 'success', category: cate };
-});
-
-// 删除分类
-router.delete('/categories', async ctx => {
-    if (!ctx.request.body.token || ctx.request.body.token != global.token) {
-        ctx.body = { result: 'failed', message: 'Invalid Token' };
-        return;
-    }
-    let category = await db.Category.findOne({ where: { id: ctx.request.body.id } });
-    if (!category) { ctx.body = { result: 'failed', message: 'Category Not Found!' }; return; }
-    await category.remove()
-    ctx.body = { result: 'success', category: cate };
-});
-
-// 发布评论
-router.post('/comments', async ctx => {
-    let aid = parseInt(ctx.request.body.articleId)
-    if (!(ctx.request.body.content && ctx.request.body.uname && ctx.request.body.email && aid)) {
-        ctx.body = { result: 'failed', message: '请填写所有字段!' };
-        return;
-    }
-    let article = await db.Article.findById(aid);
-    if (!article) {
-        ctx.body = { result: 'failed', message: '文章不存在!' };
-        return;
-    }
-    let comment = await db.Comment.create({
-        uname: ctx.request.body.uname,
-        content: ctx.request.body.content,
-        articleId: aid,
-        email: ctx.request.body.email
-    });
-    ctx.body = { result: 'success', comment: comment };
 });
 
 // GET /api/works
@@ -343,123 +282,6 @@ router.delete('/works/:id', async ctx => {
     ctx.body = { result: 'success' };
 })
 
-// GET /api/notes
-router.get('/notes', async ctx => {
-    if (!ctx.isAuthed) {
-        ctx.body = { result: 'failed', message: '令牌错误' };
-        ctx.status = 401;
-        return;
-    }
-    let result = await db.Note.findAll({
-        attributes: ['id', 'title', 'folderId', 'createdAt'],
-    });
-    var data = result.map(x => x.get({ plain: true }));
-    ctx.body = data;
-});
-
-
-// GET /api/notes/:id
-router.get('/notes/:id', async ctx => {
-    if (!ctx.isAuthed) {
-        ctx.body = { result: 'failed', message: '令牌错误' };
-        ctx.status = 401;
-        return;
-    }
-    let result = await db.Note.findOne({
-        where: { id: ctx.params.id },
-        attributes: ['id', 'title', 'content', 'folderId', 'createdAt'],
-    });
-    if (!result) {
-        ctx.body = { result: 'failed', message: '没有找到该笔记' };
-        ctx.status = 404;
-        return;
-    }
-    var data = result.map(x => x.get({ plain: true }));
-    ctx.body = data;
-});
-
-// POST /api/notes
-router.post('/notes', async ctx => {
-    if (!ctx.isAuthed) {
-        ctx.body = { result: 'failed', message: '令牌错误' };
-        ctx.status = 401;
-        return;
-    }
-    let data = ctx.request.body;
-    if (!(data && data.title)) {
-        ctx.body = { result: 'failed', message: '参数不完整' };
-        ctx.status = 400;
-        return;
-    }
-    var note = await db.Note.create(data);
-    ctx.body = { result: 'success', id: note.id };
-});
-
-// PUT /api/notes/:id
-router.put('/notes/:id', async ctx => {
-    if (!ctx.isAuthed) {
-        ctx.body = { result: 'failed', message: '令牌错误' };
-        ctx.status = 401;
-        return;
-    }
-    let data = ctx.request.body;
-    data.id = undefined;
-    let result = await db.Note.findOne({
-        where: { id: ctx.params.id },
-    });
-    if (!result) {
-        ctx.body = { result: 'failed', message: '没有找到该笔记' };
-        ctx.status = 404;
-        return;
-    }
-    await result.update(data);
-    ctx.body = { result: 'success' };
-});
-
-// DELETE /api/notes/:id
-router.delete('/notes/:id', async ctx => {
-    if (!ctx.isAuthed) {
-        ctx.body = { result: 'failed', message: '令牌错误' };
-        ctx.status = 401;
-        return;
-    }
-    let result = await db.Note.findOne({
-        where: { id: ctx.params.id },
-    });
-    if (!result) {
-        ctx.body = { result: 'failed', message: '没有找到该笔记' };
-        ctx.status = 404;
-        return;
-    }
-    await result.delete();
-    ctx.body = { result: 'success' };
-});
-
-// GET /api/folders
-router.get('/folders', async ctx => {
-    if (!ctx.isAuthed) {
-        ctx.body = { result: 'failed', message: '令牌错误' };
-        ctx.status = 401;
-        return;
-    }
-    let result = await db.Note.findAll({
-        include: [db.Folder]
-    });
-    ctx.body = result;
-
-});
-
-// POST /api/folders
-router.post('/folders', async ctx => {
-    if (!ctx.isAuthed) {
-        ctx.body = { result: 'failed', message: '令牌错误' };
-        ctx.status = 401;
-        return;
-    }
-    let data = ctx.request.body;
-    await db.Note.create(data);
-    ctx.body = { result: 'success' };
-});
 
 
 module.exports = router;

@@ -65,29 +65,30 @@
         </div>
 
         <!--发表评论-->
-        <form class="card">
+        <form class="card" action="comments" method="POST">
             <div class="card-content">
                 <h5>发表评论</h5>
             </div>
+            <input type="hidden" name="aid" value="{{article.id}}"/>
             <div class="card-content">
                 <div class="row">
                     <div class="col-sm-12 col-md-6">
                         <div class="textbox">
                             <span class="lable">邮箱 :</span>
-                            <input type="text" id="comment-email" name="email" placeholder="用于标识身份">
+                            <input required="required" type="text" name="email" placeholder="用于标识身份">
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-6">
                         <div class="textbox">
                             <span class="lable">昵称 :</span>
-                            <input type="text" id="comment-uname" name="uname" placeholder="将显示在评论上方">
+                            <input required="required" type="text" name="uname" placeholder="将显示在评论上方">
                         </div>
                     </div>
                 </div>
-                <textarea class="textarea" id="comment-content" name="content" placeholder="评论正文" style="height:300px;"></textarea>
+                <textarea required="required" class="textarea" name="content" placeholder="评论正文" style="height:300px;"></textarea>
             </div>
             <div class="card-content-row">
-                <input type="button" class="card-content-cell card-content-cell-blue" id="submit-comment" value="发表评论">
+                <button type="submit" class="card-content-cell card-content-cell-blue" id="submit-comment" >发表评论</button>
             </div>
         </form>
 
@@ -106,25 +107,6 @@
 <script src="/js/highlight.min.js"></script>
 <script>
     hljs.initHighlightingOnLoad();
-    $(document).ready(function () {
-        $('#submit-comment').click(function () {
-            $.post('/api/comments', {
-                articleId: $('#article-id').text(),
-                email: $('#comment-email').val(),
-                uname: $('#comment-uname').val(),
-                content: $('#comment-content').text()
-            }, function (data, status) {
-                console.log(data);
-                if (data.result == "success") {
-                    alert("评论成功！");
-                    location.reload();
-                } else {
-                    alert(data.message);
-                }
-
-            });
-        });
-    });
 
 </script>
 {% endblock %}

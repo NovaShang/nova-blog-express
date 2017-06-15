@@ -113,6 +113,24 @@
     background-color: #161616;
 }
 
+.contentlist-toolbar {
+    display: flex;
+    padding: 0px 10px;
+    align-items: center;
+}
+
+.contentlist-toolbar>* {
+    font-size: 12px;
+    margin: 4px;
+    height: 24px;
+    padding: 1px;
+}
+
+.contentlist-toolbar .btn {
+    padding: 5px;
+}
+
+
 .tabtitle {
     color: #888;
     padding: 5px 10px;
@@ -146,11 +164,11 @@
     border: none;
 }
 
-.mini-toobar {
+.mini-toolbar {
     display: none;
 }
 
-.mini-toobar>button {
+.mini-toolbar>button {
     display: block;
     border: none;
     background-color: transparent;
@@ -160,11 +178,11 @@
     margin-left: 5px;
 }
 
-.mini-toobar>button:hover {
+.mini-toolbar>button:hover {
     color: #007acc;
 }
 
-.contentlist-item:hover .mini-toobar {
+.contentlist-item:hover .mini-toolbar {
     display: flex;
 }
 

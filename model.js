@@ -29,7 +29,7 @@ const BlogComment = sequelize.define('comment', {
     hidden: Sequelize.BOOLEAN
 });
 const Work = sequelize.define('work', {
-    name: Sequelize.STRING,
+    title: Sequelize.STRING,
     summary: Sequelize.TEXT,
     giturl: Sequelize.STRING,
     projecturl: Sequelize.STRING,
@@ -40,13 +40,6 @@ const Work = sequelize.define('work', {
 const Tech = sequelize.define('tech', {
     name: Sequelize.STRING
 });
-const Note = sequelize.define('note', {
-    title: Sequelize.STRING,
-    content: Sequelize.TEXT,
-});
-const Folder = sequelize.define('folder', {
-    name: Sequelize.STRING,
-})
 
 //建立模型间的关联
 Article.belongsTo(Category);
@@ -56,10 +49,6 @@ Article.belongsToMany(Tag, { through: 'article2tag' });
 Tag.belongsToMany(Article, { through: 'article2tag' });
 Work.belongsToMany(Tech, { through: 'work2tech' });
 Tech.belongsToMany(Work, { through: 'work2tech' });
-Note.belongsTo(Folder);
-Folder.hasMany(Note);
-Folder.belongsTo(Folder);
-Folder.hasMany(Folder);
 
 //导出
 exports.Article = Article;
@@ -68,8 +57,6 @@ exports.Category = Category;
 exports.Comment = BlogComment;
 exports.Work = Work;
 exports.Tech = Tech;
-exports.Note = Note;
-exports.Folder = Folder;
 exports.dbContext = sequelize;
 //同步数据库
 if (process.argv[2] == 'migrate') {
