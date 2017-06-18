@@ -30,6 +30,7 @@ const BlogComment = sequelize.define('comment', {
 });
 const Work = sequelize.define('work', {
     title: Sequelize.STRING,
+    name:Sequelize.STRING,
     summary: Sequelize.TEXT,
     giturl: Sequelize.STRING,
     projecturl: Sequelize.STRING,

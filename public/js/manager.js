@@ -19,7 +19,7 @@ const app = new Vue({
             article: false,
             work: false
         },
-        create: {
+        objToCreate: {
             article: {
                 title: "",
                 category: "",
@@ -94,7 +94,7 @@ const app = new Vue({
                 });
         },
         create: function (type) {
-            res[type].save({}, this.create[type]).then(x => {
+            res[type].save({}, this.objToCreate[type]).then(x => {
                 this.refresh(type)
             });
         },
@@ -120,10 +120,10 @@ const app = new Vue({
             });
         },
         createDoc: function (type) {
-            Doc.new(type, this.create[type]).then(id => {
+            Doc.new(type, this.objToCreate[type]).then(id => {
                 this.open(type, id);
                 this.refresh(type);
-                this.create[title].title = "";
+                this.objToCreate[type].title = "";
                 this.show[type] = false;
             }, result => {
                 console.log(result);
@@ -187,3 +187,4 @@ Doc.new = function (type, data) {
         }
     );
 }
+

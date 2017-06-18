@@ -174,7 +174,7 @@ router.post('/articles/comments', async ctx => {
         articleId: data.aid,
         email: data.email
     });
-    ctx.redirect('/articleS/' + data.aid);
+    ctx.redirect('/articles/' + data.aid);
 });
 
 module.exports = router;

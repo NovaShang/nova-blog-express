@@ -282,6 +282,30 @@ router.delete('/works/:id', async ctx => {
     ctx.body = { result: 'success' };
 })
 
+// GET /api/teches/id
+router.get('/teches', async ctx => {
+    ctx.body = await db.Tech.findAll();
+});
+
+// POST /api/teches
+router.post('/teches', async ctx => {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
+        return;
+    }
+    let data = ctx.request.body;
+    if (!data.name) {
+        ctx.body = {
+            result: 'failed',
+            message: '参数不完整'
+        };
+        ctx.status = 400;
+        return;
+    }
+    let tech = await db.tech.create(data);
+    ctx.body = { result: 'success', tag: tag };
+});
 
 
 module.exports = router;
