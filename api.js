@@ -48,10 +48,10 @@ router.get('/articles', async ctx => {
             attributes: ['name', 'title']
         }]
     });
-    var data = result.map(x => x.get({ plain: true }));
+    let data = result.map(x => x.get({ plain: true }));
     data.forEach(x => {
         x.category = x.category.title;
-        x.tags = x.tags.map(x => x.name);
+        x.tags = x.tags.map(y => y.name);
     });
     ctx.body = data;
 });
@@ -92,14 +92,14 @@ router.post('/articles', async ctx => {
         ctx.status = 400;
         return;
     }
-    var cate = await db.Category.findOne({ where: { title: data.category } });
+    let cate = await db.Category.findOne({ where: { title: data.category } });
     if (!cate) {
         ctx.body = { result: 'failed', message: '无效的类别' };
         ctx.status = 400;
         return;
     }
-    var tags = await db.Tag.findAll({ where: { name: { $in: data.tags } } });
-    var article = await db.Article.create(data);
+    let tags = await db.Tag.findAll({ where: { name: { $in: data.tags } } });
+    let article = await db.Article.create(data);
     article.setCategory(cate);
     article.setTags(tags);
     await article.save();
@@ -113,14 +113,14 @@ router.put('/articles/:id', async ctx => {
         ctx.status = 401;
         return;
     }
-    var data = ctx.request.body;
+    let data = ctx.request.body;
     data.id = undefined;
     if (!(data && data.tags && data.category && data.title)) {
         ctx.body = { result: 'failed', message: '参数不完整' };
         ctx.status = 400;
         return;
     }
-    var article = await db.Article.findOne({
+    let article = await db.Article.findOne({
         where: { id: ctx.params.id }
     });
     if (!article) {
@@ -128,13 +128,13 @@ router.put('/articles/:id', async ctx => {
         ctx.status = 404;
         return;
     }
-    var cate = await db.Category.findOne({ where: { title: data.category } });
+    let cate = await db.Category.findOne({ where: { title: data.category } });
     if (!cate) {
         ctx.body = { result: 'failed', message: '无效的类别' };
         ctx.status = 400;
         return;
     }
-    var tags = await db.Tag.findAll({ where: { name: { $in: data.tags } } });
+    let tags = await db.Tag.findAll({ where: { name: { $in: data.tags } } });
     await article.update(data);
     article.setCategory(cate);
     article.setTags(tags);
@@ -149,7 +149,7 @@ router.delete('/articles/:id', async ctx => {
         ctx.status = 401;
         return;
     }
-    var article = await db.Article.findOne({ where: { id: ctx.params.id } });
+    let article = await db.Article.findOne({ where: { id: ctx.params.id } });
     if (!article) {
         ctx.body = { result: 'failed', message: '没有找到该文章' };
         ctx.status = 404;
@@ -217,64 +217,88 @@ router.post('/categories', async ctx => {
 
 // GET /api/works
 router.get('/works', async ctx => {
-    ctx.body = await db.Work.findAll({
+    let result = await db.Work.findAll({
         where: {
             hidden: { not: true }
         },
-        attributes: ['id', 'name', 'summary'],
+        attributes: ['id', 'name', 'summary','title'],
         include: [{
             model: db.Tech,
             attributes: ['name']
         }],
         order: 'work.createdAt DESC'
     });
+    let data = result.map(x => x.get({ plain: true }));
+    data.forEach(x => {
+        x.teches = x.teches.map(y => y.name);
+    });
+    ctx.body = data;
+
 });
 
 // GET /api/works/id
 router.get('/works/:id', async ctx => {
-    ctx.body = await db.Work.findById(ctx.params.id);
+    let result = await db.Work.findOne({where:{id:ctx.params.id},include:[db.Tech]});
+    let d = result.get({ plain: true });
+    d.teches = d.teches.map(x => x.name);
+    ctx.body = d;
 });
 
 // POST /api/works
 router.post('/works', async ctx => {
-    if (!(ctx.request.body.work && ctx.request.body.work.name && ctx.request.body.work.summary && ctx.request.body.work.content && (ctx.request.body.techs instanceof Array))) {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
+        return;
+    }
+    let data = ctx.request.body;
+    if (!(data && data.name && data.title && (data.teches instanceof Array))) {
         ctx.body = { result: 'failed', message: '请填写所有字段!' };
+        ctx.status = 400;
         return;
     };
-    let techs = await db.Tech.findAll();
-    for (element of ctx.request.body.techs) {
-        if (!techs.some(x => x.name == element)) {
-            let tech = db.Tech.create({ name: element })
-            techs.push(tech);
-        }
-    }
-    let work = await db.Work.create(ctx.request.body.work);
-    await work.setTeches(techs.filter(x => ctx.request.body.techs.some(y => x.name == y)));
+    let teches = await db.Tech.findAll({ where: { name: { $in: data.teches } } });
+    let work = await db.Work.create(data);
+    await work.setTeches(teches);
     ctx.body = { result: 'success', id: work.id };
 });
 
 // PUT /api/works/id
 router.put('/works/:id', async ctx => {
-    if (!(ctx.request.body.work && ctx.request.body.work.name && ctx.request.body.work.summary && ctx.request.body.work.content && (ctx.request.body.techs instanceof Array))) {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
+        return;
+    }
+    let data=ctx.request.body;
+    if (!(data && data.name && data.title && (data.teches instanceof Array))) {
         ctx.body = { result: 'failed', message: '请填写所有字段!' };
+        ctx.status = 400;
         return;
     };
     let work = await db.Work.findById(ctx.params.id);
     if (!work) {
         ctx.body = { result: 'failed', message: '作品不存在!' };
+        ctx.status = 400;
         return;
     }
-    await work.update(ctx.request.body.work);
-    let techs = await db.Tech.findAll();
-    await work.setTechs(techs.filter(x => ctx.request.body.techs.some(y => x.name == y)));
+    await work.update(data);
+    let teches = await db.Tech.findAll({ where: { name: { $in: data.teches } } });
+    await work.setTeches(teches);
     ctx.body = { result: 'success', id: work.id };
 });
 
 // DELETE /api/works/id
 router.delete('/works/:id', async ctx => {
+    if (!ctx.isAuthed) {
+        ctx.body = { result: 'failed', message: '令牌错误' };
+        ctx.status = 401;
+        return;
+    }
     let work = await db.Work.findById(ctx.params.id);
     if (!work) {
         ctx.body = { result: 'failed', message: '作品不存在!' };
+        ctx.status = 400;
         return;
     }
     work.hidden = true;
@@ -303,8 +327,8 @@ router.post('/teches', async ctx => {
         ctx.status = 400;
         return;
     }
-    let tech = await db.tech.create(data);
-    ctx.body = { result: 'success', tag: tag };
+    let tech = await db.Tech.create(data);
+    ctx.body = { result: 'success', tech: tech };
 });
 
 

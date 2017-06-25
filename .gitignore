@@ -116,10 +116,10 @@ typings/
 
 # sqlite3 database
 
-.db
+*.db
 
 # vscode
 
-.vscode
+.vscode/
 
-/config.js
+config.js

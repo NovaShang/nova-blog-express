@@ -58,6 +58,8 @@
             <div class="content">
                 <input style="display:block" class="textbox textbox-inverse" type="text" v-model="objToCreate.work.title" placeholder="输入标题"
                 />
+                <input style="display:block" class="textbox textbox-inverse" type="text" v-model="objToCreate.work.name" placeholder="输入名称"
+                />
             </div>
             <div class="footer">
                 <button type="button" class="btn btn-gray" @click="createDoc('work')">确定</button>
@@ -121,12 +123,12 @@
                 <!--作品管理-->
                 <div v-show="currentModule=='work'" class="module">
                     <div class="contentlist-toolbar">
-                        <button class="btn btn-gray" @click="show.createWork=true">添加作品</button>
+                        <button class="btn btn-gray" @click="show.work=true">添加作品</button>
                         <button class="btn btn-gray" @click="refresh('work')">刷新</button>
                     </div>
                     <div class="contentlist-container">
                         <div class="contentlist">
-                            <div v-for="work in data.work" class="contentlist-item" @click="open('word',work.id)">
+                            <div v-for="work in data.work" class="contentlist-item" @click="open('work',work.id)">
                                 <div class="header">
                                     <div class="title">${work.title}</div>
                                     <div class="mini-toolbar">
@@ -152,7 +154,6 @@
                 </div>
 
 
-
             </div>
             <!--标签页-->
             <div style="display:flex; flex-grow:1;flex-direction:column">
@@ -161,7 +162,7 @@
                     <button v-for="doc in docs" @click="currentDoc=doc" v-bind:class="['tabtitle',{'active':currentDoc==doc}]"><span v-show="doc.dirty">● </span>${doc.data.title.substring(0,12)}</button>
                 </div>
                 <!--编辑标签弹出框-->
-                <div class="popover" style="width:300px;right:50px;top:75px;" v-show="show.tag &amp;&amp; currentDoc.type=='article'">
+                <div class="popover" style="width:300px;right:50px;top:75px;" v-if="show.tag &amp;&amp; currentDoc.type=='article'">
                     <div class="header">
                         <button class="btn btn-none" @click="create('tag')"><span class="fa fa-plus"></span></button>
                         <input v-model="objToCreate.tag.name" style="flex-grow:1;margin:0px;" class="textbox textbox-inverse">
@@ -173,33 +174,70 @@
                         </div>
                     </div>
                 </div>
+                <!--编辑技术弹出框-->
+                <div class="popover" style="width:300px;right:50px;top:75px;" v-if="show.tech &amp;&amp; currentDoc.type=='work'">
+                    <div class="header">
+                        <button class="btn btn-none" @click="create('tech')"><span class="fa fa-plus"></span></button>
+                        <input v-model="objToCreate.tech.name" style="flex-grow:1;margin:0px;" class="textbox textbox-inverse">
+                        <button class="btn btn-none" @click="show.tech=false"><span class="fa fa-close"></span></button>
+                    </div>
+                    <div class="content">
+                        <div v-for="tech in data.tech" class="tag tag-dark" v-show="(!currentDoc)||(!currentDoc.data.teches.includes(tech.name))">
+                            <span @click="currentDoc.data.teches.push(tech.name)">${tech.name}</span>
+                        </div>
+                    </div>
+                </div>
                 <!--标签页正文-->
                 <div v-for="doc in docs" v-show="currentDoc==doc" class="editor">
                     <div v-if="currentDoc.type=='work'">
+                        <div class="editor-toolbar">
+                            <input class="textbox textbox-inverse" placeholder="输入标题" type="text" style="flex-grow:2" v-model="doc.data.title" @input="doc.dirty=true"
+                            />
+                            <input class="textbox textbox-inverse" placeholder="输入名称" type="text" style="flex-grow:1" v-model="doc.data.name" @input="doc.dirty=true"
+                            />
+                            <div class="tag-list">
+                                <div v-for="tech in doc.data.teches" class="tag tag-dark" @click="doc.data.teches.pop(tech);doc.dirty=true;">
+                                    <span>${tech}</span>
+                                </div>
+                                <button class="btn btn-none" @click="show.tech=true"><span class="fa fa-plus-square"></span></button>
+                            </div>
+                            <button class="btn btn-gray">上传图片</button>
+                            <button class="btn btn-gray" @click="doc.save()">保存</button>
+                        </div>
+                        <div class="editor-toolbar">
+                            <input class="textbox textbox-inverse" placeholder="输入Github地址" type="text" style="flex-grow:1" v-model="doc.data.giturl"
+                                @input="doc.dirty=true" />
+                            <input class="textbox textbox-inverse" placeholder="输入项目地址" type="text" style="flex-grow:1" v-model="doc.data.projecturl"
+                                @input="doc.dirty=true" />
+                        </div>
+                        <div class="editor-toolbar">
+                            <input class="textbox textbox-inverse" placeholder="摘要" type="text" v-model="doc.data.summary" style="flex-grow:1" @input="doc.dirty=true"
+                            />
+                        </div>
+
 
                     </div>
                     <div v-if="currentDoc.type=='article'">
                         <div class="editor-toolbar">
-                            <input style="flex-grow:1" class="textbox textbox-inverse" type="text" v-model="doc.data.title" @input="doc.dirty=true"/>
+                            <input style="flex-grow:1" class="textbox textbox-inverse" type="text" v-model="doc.data.title" @input="doc.dirty=true" />
+
+                            <select class="select select-inverse" v-model="doc.data.category" @input="doc.dirty=true">
+                                <option v-for="cate in data.category" v-bind:value="cate.title">${cate.title}</option>
+                            </select>
                             <div class="tag-list">
                                 <div v-for="tag in doc.data.tags" class="tag tag-dark" @click="doc.data.tags.pop(tag);doc.dirty=true;">
                                     <span>${tag}</span>
                                 </div>
                                 <button class="btn btn-none" @click="show.tag=true"><span class="fa fa-plus-square"></span></button>
                             </div>
-                            <select class="select select-inverse" v-model="doc.data.category"  @input="doc.dirty=true">
-                                <option v-for="cate in data.category" v-bind:value="cate.title">${cate.title}</option>
-                            </select>
                             <button class="btn btn-gray">上传图片</button>
                             <button class="btn btn-gray" @click="doc.save()">保存</button>
                         </div>
                         <div class="editor-toolbar">
-                            <input class="textbox textbox-inverse" type="text" v-model="doc.data.summary" style="flex-grow:1"  @input="doc.dirty=true"/>
+                            <input class="textbox textbox-inverse" type="text" v-model="doc.data.summary" style="flex-grow:1" @input="doc.dirty=true"
+                            />
                         </div>
                     </div>
-                    <div v-if="currentDoc.type=='note'">
-                    </div>
-
                     <textarea class="textarea" v-bind:id="'tab_'+doc.type+'_'+doc.data.id" spellcheck="false" v-model="doc.data.content" @input="doc.dirty=true"></textarea>
 
 

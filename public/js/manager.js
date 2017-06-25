@@ -35,7 +35,11 @@ const app = new Vue({
             },
             work: {
                 name: "",
-                teches: []
+                teches: [],
+                content: ""
+            },
+            tech: {
+                name: ""
             }
         },
         docs: [],

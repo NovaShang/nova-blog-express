@@ -1,30 +1,18 @@
 {% extends "base.html" %} {% block title %}作品集 - Nova{% endblock %} {% block content %}
 <div class="row">
-    <div class="col-md-9 col-sm-12">
-
-        <div class="content-card">
-
-            <div class="card-header">
-                <div class="card-header-mask">
-                    <div class="article-title">
-                        <h1>{{article.title}}</h1>
-                        <p>{{article.createdAt|date('Y-m-d H:i', -480, 'CCT')}} 浏览:{{article.count}}</p>
-                    </div>
-                </div>
+    {% for work in works %}
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-content">
+                <img src="{{work.logo}}"></img>
             </div>
             <div class="card-content">
-                <div class="article-content">
-                    {{article_content | safe }}
-                </div>
+                <h4 class="blue-text">{{work.title}}</h4>
+                <p>{{work.summary}}</p>
             </div>
         </div>
     </div>
-    <div class="col-md-3 hidden-sm-down">
-        <p>哈哈哈</p>
-    </div>
+    {% endfor %}
+
 </div>
-<script src="/js/highlight.min.js"></script>
-<script>
-    hljs.initHighlightingOnLoad()
-</script>
 {% endblock %}

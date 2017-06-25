@@ -30,7 +30,7 @@ const BlogComment = sequelize.define('comment', {
 });
 const Work = sequelize.define('work', {
     title: Sequelize.STRING,
-    name:Sequelize.STRING,
+    name: Sequelize.STRING,
     summary: Sequelize.TEXT,
     giturl: Sequelize.STRING,
     projecturl: Sequelize.STRING,
@@ -66,4 +66,24 @@ if (process.argv[2] == 'migrate') {
     sequelize.sync().then(() => { console.log('Database sync complete!') }, () => {
         console.log('Database sync Failed!')
     });
+};
+
+if (process.argv[2] == 'query') {
+    const readline = require('readline');
+    console.log('Database manager');
+    const client = readline.createInterface(
+        process.stdin,
+        process.stdout
+    );
+    const action = async (sql) => {
+        try {
+            let result = await sequelize.query(sql);
+            console.log(result);
+        }
+        catch (err) {
+            console.log(err);
+        }
+        return client.question('INPUT SQL > ', action)
+    };
+    client.question('INPUT SQL > ', action);
 }

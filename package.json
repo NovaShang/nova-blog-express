@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate": "node model.js migrate",
-    "start": "node server.js runserver"
+    "start": "node server.js runserver",
+    "query":"node model.js query"
   },
   "keywords": [
     "blog",
@@ -23,6 +24,7 @@
     "koa2-swig": "^2.2.1",
     "marked": "^0.3.6",
     "sequelize": "^3.30.2",
+    "sequelize-cli": "^2.7.0",
     "sqlite3": "^3.1.8"
   },
   "devDependencies": {},
