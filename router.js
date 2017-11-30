@@ -41,7 +41,7 @@ router.get('/admin', async ctx => {
 });
 
 // 添加中间件，用于显示分类和标签列表
-router.use(async (ctx, next) => {
+router.use(async(ctx, next) => {
     ctx.cates = await db.Category.findAll({ include: [{ model: db.Article, attributes: ['id'] }] });
     ctx.tags = await db.Tag.findAll({ include: [{ model: db.Article, attributes: ['id'] }] });
     await next();
@@ -56,8 +56,8 @@ router.get('/', async ctx => {
         order: 'article.createdAt DESC',
         include: [db.Category, db.Tag],
         distinct: true,
-        offset:(page-1)*config.perpage,
-        limit:config.perpage
+        offset: (page - 1) * config.perpage,
+        limit: config.perpage
     });
     ctx.body = await ctx.render('blog', {
         articles: result.rows,
@@ -124,7 +124,7 @@ router.get('/categories/:name', async ctx => {
 // 文章正文页
 router.get('/articles/:id', async ctx => {
     let article = await db.Article.findOne({
-        where: { id: ctx.params.id, hidden: { $not: true } },
+        where: { id: ctx.params.id },
         include: [db.Tag, db.Category, db.Comment]
     });
     if (!article) {
