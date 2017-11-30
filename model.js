@@ -13,7 +13,7 @@ const Article = sequelize.define('article', {
     content: Sequelize.TEXT,
     count: Sequelize.INTEGER,
     thumb: Sequelize.STRING,
-    hidden: Sequelize.BOOLEAN,
+    hidden: Sequelize.BOOLEAN
 });
 const Tag = sequelize.define('tag', {
     name: Sequelize.STRING
@@ -75,12 +75,11 @@ if (process.argv[2] == 'query') {
         process.stdin,
         process.stdout
     );
-    const action = async (sql) => {
+    const action = async(sql) => {
         try {
             let result = await sequelize.query(sql);
             console.log(result);
-        }
-        catch (err) {
+        } catch (err) {
             console.log(err);
         }
         return client.question('INPUT SQL > ', action)
